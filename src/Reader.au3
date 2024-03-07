@@ -85,15 +85,15 @@ While True
         Case $mSlider['Config']
             Settings()
         Case $GUI_EVENT_MAXIMIZE, $GUI_EVENT_RESTORE
-			If IsObj(_IEGetObjById($oIE, 'epub-center')) Then
-				Sleep(250)
-				_IEAction($oIE, 'refresh')
-			Else
-				_IENavigate($oIE, _IEPropertyGet($oIE, 'locationurl'))
+            If IsObj(_IEGetObjById($oIE, 'epub-center')) Then
+                Sleep(250)
+                _IEAction($oIE, 'refresh')
+            Else
+                _IENavigate($oIE, _IEPropertyGet($oIE, 'locationurl'))
                 If IsMap($mEPUB) Then
                     If $mSlider['ActiveChapter'] = 1 Then InsertCSS(FixCoverCSS())
                 EndIf
-			EndIf
+            EndIf
         Case $GUI_EVENT_CLOSE
             ExitLoop
     EndSwitch
