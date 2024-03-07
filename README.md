@@ -14,7 +14,7 @@ Features:
 > This is an early (experimental) release that might have undiscovered bugs and please note that some features are just partially implemented.
 
 > [!TIP]
-> If you have questions or if you need support for this UDF please visit AutoIt forum and post your questions [in this thread]().
+> If you have questions or if you need support for this UDF please visit AutoIt forum and post your questions [in this thread](https://www.autoitscript.com/forum/topic/211637-epub-reader/).
 
 # Credits
 [Epub icons created by shohanur.rahman13 - Flaticon](https://www.flaticon.com/free-icons/epub)
