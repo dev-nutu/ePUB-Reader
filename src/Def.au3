@@ -7,6 +7,8 @@ Global $__sWorkingDir = @TempDir
 Global $fDeleteRes, $fDeleteCfg = False
 Global $fAllowForward = False, $fAllowBack = False
 Global $aTips[6] = ['Load ePUB', 'Back', 'First chapter', 'Stop', 'Next', 'Refresh']
-Global $sCustomCSS, $aColors[3], $aCollector[1]
+Global $aColorProperty[7] = ['PrimaryColor', 'AlternateColor', 'SelectionColor', 'InputsBkColor', 'InputsTextColor', 'LabelsTextColor', 'FrameColor']
+Global $aFontProperty[3] = ['FontSize', 'FontWeight', 'FontName']
+Global $sCustomCSS, $aColors[7], $aFont[3], $aCollector[1]
 Global Const $sAppTitle = 'ePub Reader'
-Global Const $sVersion = '1.0'
+Global Const $sVersion = '1.1.0.0'
