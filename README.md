@@ -28,7 +28,7 @@ Features:
 v.1.1.0.0
 - Fixed some issues to open certain ePUB files
 - Added more options to customize UI
-- Added a button to fast jump to a specific chapter
+- Added a button to jump fast to a specific chapter
 
 # Credits
 [Epub icons created by shohanur.rahman13 - Flaticon](https://www.flaticon.com/free-icons/epub)
