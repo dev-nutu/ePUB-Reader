@@ -2,12 +2,12 @@
 
 Global Enum $NO_SLIDER_EVENT, $CHAPTER_CHANGED, $PREV_CHAPTER, $NEXT_CHAPTER
 
-Func CreateSlider($hGUI, $iX, $iY, $iWidth, $iHeight, $iSliderColor = 0x242423, $iSliderAltColor = 0x333333,$iActiveColor = 0x9e2a2b)
+Func CreateSlider($hGUI, $iX, $iY, $iWidth, $iHeight, $aColors)
     Local $mSlider[]
     $mSlider['GUI'] = $hGUI
-    $mSlider['Color'] = $iSliderColor
-    $mSlider['AltColor'] = $iSliderAltColor
-    $mSlider['ActiveColor'] = $iActiveColor
+    $mSlider['Color'] = $aColors[0]
+    $mSlider['AltColor'] = $aColors[1]
+    $mSlider['ActiveColor'] = $aColors[2]
     $mSlider['Min'] = Null
     $mSlider['Max'] = Null
     $mSlider['X'] = $iX
@@ -16,18 +16,22 @@ Func CreateSlider($hGUI, $iX, $iY, $iWidth, $iHeight, $iSliderColor = 0x242423, 
     $mSlider['ElementHeigth'] = Int($iHeight / 2)
     $mSlider['W'] = $iWidth - ($iHeight * 2) - 20
     $mSlider['Frame'] = GUICtrlCreateLabel('', $iX, $iY, $mSlider['W'], $mSlider['ElementHeigth'], 0x1000)
-    $mSlider['Label'] = GUICtrlCreateLabel('', $iX, $iY + $mSlider['ElementHeigth'], $mSlider['W'] - $mSlider['ElementHeigth'] - 10, $mSlider['ElementHeigth'], 0x200)
+    $mSlider['Label'] = GUICtrlCreateLabel('', $iX, $iY + $mSlider['ElementHeigth'], $mSlider['W'] - $mSlider['ElementHeigth'] * 2, $mSlider['ElementHeigth'], 0x200)
     $mSlider['Prev'] = GUICtrlCreateButton('', $iX + $mSlider['W'] + 10, $iY, $iHeight, $iHeight, 0x0380)
     $mSlider['Next'] = GUICtrlCreateButton('', $iX + $iWidth - $iHeight, $iY, $iHeight, $iHeight, 0x0380)
     $mSlider['Config'] = GUICtrlCreateButton('', $iX + $mSlider['W'] - $mSlider['ElementHeigth'], $iY + $mSlider['ElementHeigth'], $mSlider['ElementHeigth'], $mSlider['ElementHeigth'], 0x0380)
+    $mSlider['Jump'] = GUICtrlCreateButton('', $iX + $mSlider['W'] - $mSlider['ElementHeigth'] * 2, $iY + $mSlider['ElementHeigth'], $mSlider['ElementHeigth'], $mSlider['ElementHeigth'], 0x0380)
     GUICtrlSetTip($mSlider['Prev'], 'Previous chapter')
     GUICtrlSetTip($mSlider['Next'], 'Next chapter')
     GUICtrlSetTip($mSlider['Config'], 'Settings')
+    GUICtrlSetTip($mSlider['Jump'], 'Jump')
     GUICtrlSetCursor($mSlider['Prev'], 0)
     GUICtrlSetCursor($mSlider['Next'], 0)
     GUICtrlSetCursor($mSlider['Config'], 0)
-    GUICtrlSetFont($mSlider['Label'], 11, 500, 0, 'Segoe UI')
-    GUICtrlSetBkColor($mSlider['Frame'], $iSliderColor)
+    GUICtrlSetCursor($mSlider['Jump'], 0)
+    GUICtrlSetFont($mSlider['Label'], $aFont[0], $aFont[1], 0, $aFont[2])
+    GUICtrlSetColor($mSlider['Label'], $aColors[5])
+    GUICtrlSetBkColor($mSlider['Frame'], $aColors[6])
     GUICtrlSetState($mSlider['Frame'], 128)
     Return $mSlider
 EndFunc
