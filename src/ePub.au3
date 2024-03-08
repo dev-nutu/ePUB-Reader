@@ -118,7 +118,7 @@ Func ePUB_ReadOPF($mEPUB, $aOPF)
     Local $iElements = UBound($aOPF)
     If $iElements < 2 Then Return SetError(3, 0, False)
     Local $sOPF = FileRead($__sWorkingDir & '\' & $__sInternalName & '\' & $mEPUB['Dir'] & '\' & $aOPF[0] & ($iElements = 3 ? '\' & $aOPF[1] : ''))
-    Local $aVersion = StringRegExp($sOPF, '(?is)<package(?:.*?)version="(.*?)"(?:.*?)>', 3)
+    Local $aVersion = StringRegExp($sOPF, '(?is)<(?:.*?)package(?:.*?)version="(.*?)"(?:.*?)>', 3)
     If @error Then Return SetError(4, @error, False)
     If $aVersion[0] <> '2.0' And $aVersion[0] <> '3.0' Then Return SetError(5, 0, False)
     Local $aMetadata= StringRegExp($sOPF, '(?is)<dc:(?:.*?)>(.*?)<\/dc:(.*?)>', 3)
@@ -126,13 +126,13 @@ Func ePUB_ReadOPF($mEPUB, $aOPF)
     For $Index = 0 To UBound($aMetadata) - 1 Step 2
         _SQLite_Exec($mEPUB['DB'], 'INSERT INTO metadata (meta, value) VALUES(' & _SQLite_FastEscape($aMetadata[$Index + 1]) & ',' & _SQLite_FastEscape($aMetadata[$Index]) & ');')
     Next
-    Local $aItemRefs = StringRegExp($sOPF, '(?is)<itemref(?:.*?)idref="(.*?)"(?:.*?)\/>', 3)
+    Local $aItemRefs = StringRegExp($sOPF, '(?is)<(?:.*?)itemref(?:.*?)idref="(.*?)"(?:.*?)\/>', 3)
     If @error Then Return SetError(7, @error, False)
     For $Index = 0 To UBound($aItemRefs) - 1
         _SQLite_Exec($mEPUB['DB'], 'INSERT INTO spine (idref) VALUES(' & _SQLite_FastEscape($aItemRefs[$Index]) & ');')
     Next
     Local $aID, $aHref, $aTitle
-    Local $aItems = StringRegExp($sOPF, '(?is)<item (.*?)\/>', 3)
+    Local $aItems = StringRegExp($sOPF, '(?is)<(?:.*?)item (.*?)\/>', 3)
     If @error Then Return SetError(8, @error, False)
     For $Index = 0 To UBound($aItems) - 1
         $aID = StringRegExp($aItems[$Index], '(?is)id="(.*?)"', 3)
@@ -142,7 +142,7 @@ Func ePUB_ReadOPF($mEPUB, $aOPF)
         _SQLite_Exec($mEPUB['DB'], 'INSERT INTO manifest (href, id) VALUES(' & _SQLite_FastEscape($aHref[0]) & ',' & _SQLite_FastEscape($aID[0]) & ');')
     Next
     ; Guides are optional
-    Local $aGuide = StringRegExp($sOPF, '<reference (.*?)\/>', 3)
+    Local $aGuide = StringRegExp($sOPF, '<(?:.*?)reference (.*?)\/>', 3)
     If Not @error Then
         For $Index = 0 To UBound($aGuide) - 1
             $aHref = StringRegExp($aGuide[$Index], '(?is)href="(.*?)"', 3)
