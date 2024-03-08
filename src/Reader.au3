@@ -550,7 +550,7 @@ Func Settings()
     $sCredits &= 'Refresh icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/refresh)' & @CRLF & @CRLF
     $sCredits &= 'Next icons created by KP Arts - Flaticon (https://www.flaticon.com/free-icons/next)' & @CRLF & @CRLF
     $sCredits &= 'Settings icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/settings)' & @CRLF & @CRLF
-    $sCredits &= '<Ui icons created by Smashicons - Flaticon (https://www.flaticon.com/free-icons/ui)' & @CRLF
+    $sCredits &= 'Ui icons created by Smashicons - Flaticon (https://www.flaticon.com/free-icons/ui)' & @CRLF
     ; UI
     Local $hGUI = GUICreate('Settings', 405, 360 + GetTitleBarHeight(), Default, Default, $DS_SETFOREGROUND, Default, $hMain)
     GUICtrlCreateTab(10, 10, 380, 300)
