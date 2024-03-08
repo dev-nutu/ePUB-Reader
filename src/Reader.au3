@@ -2,7 +2,7 @@
 #AutoIt3Wrapper_Icon=..\assets\epub.ico
 #AutoIt3Wrapper_Outfile=..\bin\ePUB Reader.exe
 #AutoIt3Wrapper_Res_Description=ePUB Reader
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.0
+#AutoIt3Wrapper_Res_Fileversion=1.1.0.0
 #AutoIt3Wrapper_Res_ProductName=ePUB Reader
 #AutoIt3Wrapper_Res_CompanyName=Andreik
 #AutoIt3Wrapper_Res_LegalCopyright=© 2024 Andreik (AutoIt Forum)
@@ -48,10 +48,11 @@ BitmapToCtrl($aCtrlButtons[3], Stop_Icon())
 BitmapToCtrl($aCtrlButtons[4], Back_Icon())
 BitmapToCtrl($aCtrlButtons[5], Refresh_Icon())
 
-$mSlider = CreateSlider($hMain, 370, 680, 820, 50, $aColors[0], $aColors[1], $aColors[2])
+$mSlider = CreateSlider($hMain, 370, 680, 820, 50, $aColors)
 BitmapToCtrl($mSlider['Prev'], Next_Icon(True))
 BitmapToCtrl($mSlider['Next'], Next_Icon())
 BitmapToCtrl($mSlider['Config'], Settings_Icon())
+BitmapToCtrl($mSlider['Jump'], Jump_Icon())
 SetSliderLabel($mSlider, 'Operation: Idle')
 
 _IENavigate($oIE, 'about:blank')
@@ -84,6 +85,8 @@ While True
             RefreshChapter()
         Case $mSlider['Config']
             Settings()
+        Case $mSlider['Jump']
+            JumpToChapter()
         Case $GUI_EVENT_MAXIMIZE, $GUI_EVENT_RESTORE
             If IsObj(_IEGetObjById($oIE, 'epub-center')) Then
                 Sleep(250)
@@ -190,15 +193,20 @@ EndFunc
 Func UpdateSlider()
     _IELoadWait($oIE)
     Local $sLocation = _IEPropertyGet($oIE, 'locationname')
-    Local $iLen = StringLen($sLocation)
     Local $aChapters = $mEPUB['Chapters']
+    Local $aMatch
     For $Index = 1 To $mEPUB['NumOfChapters']
-        If StringRight($aChapters[$Index][2], $iLen) = $sLocation Then
+        $aMatch = StringRegExp($sLocation, '(?:.*)(' & EscapeRegEx($aChapters[$Index][2]) & ')(?:.*)', 3)
+        If IsArray($aMatch) Then
             SetActiveChapter($mSlider, $Index)
             ExitLoop
         EndIf
     Next
     SetSliderLabel($mSlider, 'Operation: Idle')
+EndFunc
+
+Func EscapeRegEx($sText)
+    Return StringRegExpReplace($sText, '[\.\^\$\*\+\?\(\)\[\{\\\|]', '\\$0')
 EndFunc
 
 Func Load_ePUB($sPath)
@@ -212,36 +220,36 @@ Func Load_ePUB($sPath)
     Local $mEPUB = ePUB_Init($sPath)
     If @error Then
         SetSliderLabel($mSlider, 'Error: ' & GetErrorMessage($EPUB_INIT, @error))
-        Return
+        Return SetError(1, 0, False)
     EndIf
     SetSliderLabel($mSlider, 'Operation: Get files')
     Local $aFile = ePUB_GetFiles($mEPUB)
     If @error Then
         SetSliderLabel($mSlider, 'Error: ' & GetErrorMessage($EPUB_GETFILES, @error))
-        Return
+        Return SetError(2, 0, False)
     EndIf
     SetSliderLabel($mSlider, 'Operation: Extract content')
     ePUB_Extract($mEPUB, $aFile)
     If @error Then
         SetSliderLabel($mSlider, 'Error: ' & GetErrorMessage($EPUB_EXTRACT, @error))
-        Return
+        Return SetError(3, 0, False)
     EndIf
     SetSliderLabel($mSlider, 'Operation: Validate ePUB')
     If Not ePUB_Validate($mEPUB) Then
         SetSliderLabel($mSlider, 'Error: ' & GetErrorMessage($EPUB_VALIDATE, @error))
-        Return
+        Return SetError(4, 0, False)
     EndIf
     SetSliderLabel($mSlider, 'Operation: Get OPF')
     Local $aOPF = ePUB_GetOPF($mEPUB)
     If @error Then
         SetSliderLabel($mSlider, 'Error: ' & GetErrorMessage($EPUB_GETOPF, @error))
-        Return
+        Return SetError(5, 0, False)
     EndIf
     SetSliderLabel($mSlider, 'Operation: Read OPF')
     Local $aChapters = ePUB_ReadOPF($mEPUB, $aOPF)
     If @error Then
         SetSliderLabel($mSlider, 'Error: ' & GetErrorMessage($EPUB_READOPF, @error))
-        Return
+        Return SetError(6, 0, False)
     Else
         $mEPUB['NumOfChapters'] = @extended
     EndIf
@@ -290,7 +298,7 @@ Func WM_SIZING($hWnd, $iMsg, $wParam, $lParam)
     #forceref $iMsg, $wParam
     If $hWnd = $hMain Then
         Local $tRECT = DllStructCreate('long Left;long Top;long Right;long Bottom;', $lParam)
-        If $tRECT.Right - $tRECT.Left < 800 Then $tRECT.Right = $tRECT.Left + 800
+        If $tRECT.Right - $tRECT.Left < 900 Then $tRECT.Right = $tRECT.Left + 900
         If $tRECT.Bottom - $tRECT.Top < 300 Then $tRECT.Bottom = $tRECT.Top + 300
         Return True
     EndIf
@@ -318,10 +326,11 @@ Func ResizeControls($iWidth, $iHeight)
         GUICtrlSetPos($aCtrlButtons[$Index], $Index * 60 + 10, $iHeight - 55, 50, 50)
     Next
     GUICtrlSetPos($mSlider['Frame'], 370, $iHeight - 55, $iWidth - 500, $mSlider['ElementHeigth'])
-    GUICtrlSetPos($mSlider['Label'], 370, $iHeight - 55 + $mSlider['ElementHeigth'], $iWidth - $mSlider['ElementHeigth'] - 510, $mSlider['ElementHeigth'])
+    GUICtrlSetPos($mSlider['Label'], 370, $iHeight - 55 + $mSlider['ElementHeigth'], $iWidth - $mSlider['ElementHeigth'] * 2 - 510, $mSlider['ElementHeigth'])
     GUICtrlSetPos($mSlider['Prev'], $iWidth - 120, $iHeight - 55, $mSlider['ElementHeigth'] * 2, $mSlider['ElementHeigth'] * 2)
     GUICtrlSetPos($mSlider['Next'], $iWidth - 60, $iHeight - 55, $mSlider['ElementHeigth'] * 2, $mSlider['ElementHeigth'] * 2)
     GUICtrlSetPos($mSlider['Config'], $iWidth - $mSlider['ElementHeigth'] - 130, $iHeight - 55 + $mSlider['ElementHeigth'], $mSlider['ElementHeigth'], $mSlider['ElementHeigth'])
+    GUICtrlSetPos($mSlider['Jump'], $iWidth - $mSlider['ElementHeigth'] * 2 - 130, $iHeight - 55 + $mSlider['ElementHeigth'], $mSlider['ElementHeigth'], $mSlider['ElementHeigth'])
     $mSlider['W'] = $iWidth - 500
     $mSlider['Y'] = $iHeight - 55
     If $mSlider['Min'] <> Null And $mSlider['Max'] <> Null Then
@@ -369,14 +378,77 @@ Func GetDefaultHTML()
     Return $sDefaultHTML
 EndFunc
 
+Func JumpToChapter()
+    If Not IsMap($mEPUB) Then
+        SetSliderLabel($mSlider, 'Error: ePUB is not loaded')
+        Return SetError(1, 0, False)
+    EndIf
+    Local $hGUI = GUICreate('Jump to chapter', 240, 100 + GetTitleBarHeight(), Default, Default, $DS_SETFOREGROUND, Default, $hMain)
+    Local $cCurrentChapter = GUICtrlCreateInput($mSlider['ActiveChapter'], 45, 20, 60, 25, 0x2001)
+    Local $cDiv = GUICtrlCreateLabel('/', 105, 20, 30, 25, 0x201)
+    Local $cMaxChapter = GUICtrlCreateInput($mSlider['Max'], 135, 20, 60, 25, 0x2801)
+    Local $cJump = GUICtrlCreateButton('Jump', 10, 60, 105, 30)
+    Local $cCancel = GUICtrlCreateButton('Cancel', 125, 60, 105, 30)
+    GUICtrlSetFont($cCurrentChapter, $aFont[0], $aFont[1], 0, $aFont[2])
+    GUICtrlSetFont($cDiv, $aFont[0], $aFont[1], 0, $aFont[2])
+    GUICtrlSetFont($cMaxChapter, $aFont[0], $aFont[1], 0, $aFont[2])
+    GUICtrlSetFont($cJump, $aFont[0], $aFont[1], 0, $aFont[2])
+    GUICtrlSetFont($cCancel, $aFont[0], $aFont[1], 0, $aFont[2])
+    GUICtrlSetBkColor($cCurrentChapter, $aColors[3])
+    GUICtrlSetBkColor($cMaxChapter, $aColors[3])
+    GUICtrlSetColor($cCurrentChapter, $aColors[4])
+    GUICtrlSetColor($cMaxChapter, $aColors[4])
+    GUICtrlSetColor($cDiv, $aColors[5])
+    GUISetState(@SW_SHOW, $hGUI)
+    While True
+        Switch GUIGetMsg()
+            Case $cJump
+                Local $iChapter = Int(GUICtrlRead($cCurrentChapter))
+                If $iChapter = $mSlider['ActiveChapter'] Then ExitLoop
+                If $iChapter < 1 Or $iChapter > $mSlider['Max'] Then
+                    SetSliderLabel($mSlider, 'Error: Invalid chapter range')
+                Else
+                    GUISetState(@SW_HIDE, $hGUI)
+                    SetActiveChapter($mSlider, $iChapter)
+                    LoadChapter($mEPUB, $mSlider['ActiveChapter'])
+                    ExitLoop
+                EndIf
+            Case $cCancel
+                ExitLoop
+        EndSwitch
+    WEnd
+    SetSliderLabel($mSlider, 'Operation: Idle')
+    WinActivate($hMain)
+    GUIDelete($hGUI)
+EndFunc
+
 Func GetDefaultColor($iType)
     Switch $iType
-        Case 0
+        Case 0  ; Primary slider color
             Return 0x242423
-        Case 1
+        Case 1  ; Alternate slider color
             Return 0x333333
-        Case 2
+        Case 2  ; Selection slider color
             Return 0x9e2a2b
+        Case 3  ; Inputs background color
+            Return 0xFFFFFF
+        Case 4  ; Inputs text color
+            Return 0x000000
+        Case 5  ; Labels text color
+            Return 0x000000
+        Case 6  ; Slider frame color
+            Return 0x808080
+    EndSwitch
+EndFunc
+
+Func GetDefaultFont($iType)
+    Switch $iType
+        Case 0  ; Font size
+            Return 11
+        Case 1  ; Font width
+            Return 500
+        Case 2  ; Font name
+            Return 'Segoe UI'
     EndSwitch
 EndFunc
 
@@ -390,25 +462,39 @@ Func LoadSettings($fApply = False)
             $mSettings[$aSettings[$Index][0]] = $aSettings[$Index][1]
         Next
         $sCustomCSS = (MapExists($mSettings, 'CSS') ? $mSettings['CSS'] : GetCustomCSS())
-        $aColors[0] = (MapExists($mSettings, 'PrimaryColor') ? $mSettings['PrimaryColor'] : GetDefaultColor(0))
-        $aColors[1] = (MapExists($mSettings, 'AlternateColor') ? $mSettings['AlternateColor'] : GetDefaultColor(1))
-        $aColors[2] = (MapExists($mSettings, 'SelectionColor') ? $mSettings['SelectionColor'] : GetDefaultColor(2))
+        For $Index = 0 To UBound($aColors) - 1
+            $aColors[$Index] = (MapExists($mSettings, $aColorProperty[$Index]) ? $mSettings[$aColorProperty[$Index]] : GetDefaultColor($Index))
+        Next
+        For $Index = 0 To UBound($aFont) - 1
+            $aFont[$Index] = (MapExists($mSettings, $aFontProperty[$Index]) ? $mSettings[$aFontProperty[$Index]] : GetDefaultFont($Index))
+        Next
         $fDeleteRes = (MapExists($mSettings, 'DeleteRes') ? ($mSettings['DeleteRes'] = 'True' ? True : False) : False)
         _SQLite_Close($hDB)
     Else
         $sCustomCSS = GetCustomCSS()
-        $aColors[0] = GetDefaultColor(0)
-        $aColors[1] = GetDefaultColor(1)
-        $aColors[2] = GetDefaultColor(2)
+        For $Index = 0 To UBound($aColors) - 1
+            $aColors[$Index] = GetDefaultColor($Index)
+        Next
+        For $Index = 0 To UBound($aFont) - 1
+            $aFont[$Index] = GetDefaultFont($Index)
+        Next
         $fDeleteRes = False
     EndIf
     If $fApply Then ApplySettings()
 EndFunc
 
-Func SaveSettings($sCSS, $iPrimaryColor, $iAlternateColor, $iSelectionColor, $fDeleteWS)
-    Local $sPrimaryColor = String('0x' & Hex($iPrimaryColor, 6))
-    Local $sAlternateColor = String('0x' & Hex($iAlternateColor, 6))
-    Local $sSelectionColor = String('0x' & Hex($iSelectionColor, 6))
+Func SaveSettings($sCSS, $fDeleteWS, $aColorSettings, $aFontSettings)
+    Local $iColorProperties = UBound($aColorSettings)
+    If UBound($aColorProperty) <> $iColorProperties Then
+        SetSliderLabel($mSlider, 'Error: Invalid color properties')
+        Return SetError(1, 0, False)
+    EndIf
+    Local $iFontProperties = UBound($aFontSettings)
+    If UBound($aFontProperty) <> $iFontProperties Then
+        SetSliderLabel($mSlider, 'Error: Invalid font properties')
+        Return SetError(2, 0, False)
+    EndIf
+    Local $sColor, $sFont
     Local $sDelete = ($fDeleteWS ? 'True' : 'False')
     Local $sPrefix = 'INSERT INTO settings(property, value) VALUES'
     Local $sConflict = ' ON CONFLICT(property) DO UPDATE SET value = '
@@ -416,9 +502,14 @@ Func SaveSettings($sCSS, $iPrimaryColor, $iAlternateColor, $iSelectionColor, $fD
     Local $hDB = _SQLite_Open($__sWorkingDir & '\' & $__sInternalName & '\config.sqlite')
     If $bCreateTable Then _SQLite_Exec($hDB, 'CREATE TABLE settings(property VARCHAR(32) PRIMARY KEY, value TEXT);')
     _SQLite_Exec($hDB, $sPrefix & '("CSS", ' & _SQLite_FastEscape($sCSS) & ')' & $sConflict & _SQLite_FastEscape($sCSS) & ';')
-    _SQLite_Exec($hDB, $sPrefix & '("PrimaryColor", ' & _SQLite_FastEscape($sPrimaryColor) & ')' & $sConflict & _SQLite_FastEscape($sPrimaryColor) & ';')
-    _SQLite_Exec($hDB, $sPrefix & '("AlternateColor", ' & _SQLite_FastEscape($sAlternateColor) & ')' & $sConflict & _SQLite_FastEscape($sAlternateColor) & ';')
-    _SQLite_Exec($hDB, $sPrefix & '("SelectionColor", ' & _SQLite_FastEscape($sSelectionColor) & ')' & $sConflict & _SQLite_FastEscape($sSelectionColor) & ';')
+    For $Index = 0 To $iColorProperties - 1
+        $sColor = String('0x' & Hex($aColorSettings[$Index], 6))
+        _SQLite_Exec($hDB, $sPrefix & '(' & _SQLite_FastEscape($aColorProperty[$Index]) & ', ' & _SQLite_FastEscape($sColor) & ')' & $sConflict & _SQLite_FastEscape($sColor) & ';')
+    Next
+    For $Index = 0 To $iFontProperties - 1
+        $sFont = String($aFontSettings[$Index])
+        _SQLite_Exec($hDB, $sPrefix & '(' & _SQLite_FastEscape($aFontProperty[$Index]) & ', ' & _SQLite_FastEscape($sFont) & ')' & $sConflict & _SQLite_FastEscape($sFont) & ';')
+    Next
     _SQLite_Exec($hDB, $sPrefix & '("DeleteRes", ' & _SQLite_FastEscape($sDelete) & ')' & $sConflict & _SQLite_FastEscape($sDelete) & ';')
     _SQLite_Close($hDB)
 EndFunc
@@ -437,111 +528,162 @@ Func ApplySettings()
             $iCurrentChapter = $Index + $mSlider['Min'] - $iLocalMin
             GUICtrlSetBkColor($mSlider[$iCurrentChapter], Mod($Index, 2) ? $mSlider['Color'] : $mSlider['AltColor'])
         Next
+        GUICtrlSetFont($mSlider['Label'], $aFont[0], $aFont[1], 0, $aFont[2])
+        GUICtrlSetColor($mSlider['Label'], $aColors[5])
+        GUICtrlSetBkColor($mSlider['Frame'], $aColors[6])
         SetActiveChapter($mSlider, $mSlider['ActiveChapter'])
     EndIf
     If IsObj($oIE) Then InsertCSS($sCustomCSS)
 EndFunc
 
 Func Settings()
-    Local $iTemp, $sCSS, $fDeleteWS, $iPrimaryColor = $aColors[0], $iAlternateColor = $aColors[1], $iSelectionColor = $aColors[2]
-    Local $hGUI = GUICreate('Settings', 405, 360 + GetTitleBarHeight(), Default, Default, $DS_SETFOREGROUND, Default, $hMain)
-    GUICtrlCreateTab(10, 10, 380, 300)
-    GUICtrlCreateTabItem('CSS')
-    Local $cCSSEdit = GUICtrlCreateEdit($sCustomCSS, 20, 40, 360, 260, BitOR($WS_VSCROLL, 0x0004))
-    GUICtrlCreateTabItem('Colors')
-    Local $cPrimaryColorLabel = GUICtrlCreateLabel('Slider primary color', 30, 40, 140, 25, 0x200)
-    Local $cAlternateColorLabel = GUICtrlCreateLabel('Slider alternate color', 30, 65, 140, 25, 0x200)
-    Local $cSelectionColorLabel = GUICtrlCreateLabel('Slider selection color', 30, 90, 140, 25, 0x200)
-    Local $cPrimaryColor = GUICtrlCreateLabel('', 170, 42, 25, 20)
-    Local $cAlternateColor = GUICtrlCreateLabel('', 170, 67, 25, 20)
-    Local $cSelectionColor = GUICtrlCreateLabel('', 170, 92, 25, 20)
-    GUICtrlCreateTabItem('Workspace')
-    Local $cSizeLabel = GUICtrlCreateLabel('Current workspace size', 30, 40, 150, 25, 0x200)
-    Local $cSize = GUICtrlCreateLabel(GetWorkspaceSize(), 190, 40, 100, 25, 0x200)
-    Local $cDeleteRes = GUICtrlCreateCheckbox('Clean up workspace', 30, 65, 140, 25)
-    Local $cDeleteCfg = GUICtrlCreateCheckbox('Delete application settings on exit', 30, 90, 230, 25)
-    GUICtrlCreateTabItem('Info')
-    Local $cVersion = GUICtrlCreateLabel('Application version: ' & $sVersion, 30, 40, 300, 25, 0x200)
-    Local $cAuthor = GUICtrlCreateLabel('Author: Andreik (AutoIt Forum)', 30, 65, 300, 25, 0x200)
-    Local $cCredits = GUICtrlCreateEdit('', 30, 90, 340, 200, BitOR($WS_VSCROLL, 0x0800))
-    GUICtrlCreateTabItem('')
-    Local $cSave = GUICtrlCreateButton('Save', 10, 320, 120, 30)
-    Local $cReset = GUICtrlCreateButton('Reset', 140, 320, 120, 30)
-    Local $cCancel = GUICtrlCreateButton('Cancel', 270, 320, 120, 30)
+    ; Local variables
+    Local $vTemp, $sCSS, $fDeleteWS, $iMsg, $iSelect, $cFontGroup
+    Local $aLabel[14], $aButton[4], $aInput[5], $aColorPicker[7], $aCheckbox[2]
+    Local $aColorSettings = $aColors
+    Local $aOptSettings[2] = [$fDeleteRes, $fDeleteCfg]
+    Local $aFontSettings = $aFont
     Local $sCredits = 'Epub icons created by shohanur.rahman13 - Flaticon (https://www.flaticon.com/free-icons/epub)' & @CRLF & @CRLF
     $sCredits &= 'Start icons created by hqrloveq - Flaticon (https://www.flaticon.com/free-icons/start)' & @CRLF & @CRLF
     $sCredits &= 'Home button icons created by hqrloveq - Flaticon (https://www.flaticon.com/free-icons/home-button)' & @CRLF & @CRLF
     $sCredits &= 'Ui icons created by Dewi Sari - Flaticon (https://www.flaticon.com/free-icons/ui)' & @CRLF & @CRLF
     $sCredits &= 'Refresh icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/refresh)' & @CRLF & @CRLF
     $sCredits &= 'Next icons created by KP Arts - Flaticon (https://www.flaticon.com/free-icons/next)' & @CRLF & @CRLF
-    $sCredits &= 'Settings icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/settings)' & @CRLF
-    GUICtrlSetData($cCredits, $sCredits)
-    GUICtrlSetFont($cSizeLabel, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetFont($cSize, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetFont($cDeleteRes, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetFont($cDeleteCfg, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetFont($cCSSEdit, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetFont($cCredits, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetFont($cVersion, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetFont($cAuthor, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetFont($cPrimaryColorLabel, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetFont($cAlternateColorLabel, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetFont($cSelectionColorLabel, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetFont($cSave, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetFont($cReset, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetFont($cCancel, 11, 500, 0, 'Segoe UI')
-    GUICtrlSetBkColor($cPrimaryColor, $aColors[0])
-    GUICtrlSetBkColor($cAlternateColor, $aColors[1])
-    GUICtrlSetBkColor($cSelectionColor, $aColors[2])
-    GUICtrlSetBkColor($cCredits, 0xFFFFFF)
-    GUICtrlSetCursor($cPrimaryColor, 0)
-    GUICtrlSetCursor($cAlternateColor, 0)
-    GUICtrlSetCursor($cSelectionColor, 0)
-    GUICtrlSetState($cDeleteRes, ($fDeleteRes ? $GUI_CHECKED : $GUI_UNCHECKED))
-    GUICtrlSetState($cDeleteCfg, ($fDeleteCfg ? $GUI_CHECKED : $GUI_UNCHECKED))
+    $sCredits &= 'Settings icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/settings)' & @CRLF & @CRLF
+    $sCredits &= '<Ui icons created by Smashicons - Flaticon (https://www.flaticon.com/free-icons/ui)' & @CRLF
+    ; UI
+    Local $hGUI = GUICreate('Settings', 405, 360 + GetTitleBarHeight(), Default, Default, $DS_SETFOREGROUND, Default, $hMain)
+    GUICtrlCreateTab(10, 10, 380, 300)
+    GUICtrlCreateTabItem('CSS')
+    $aInput[0] = GUICtrlCreateEdit($sCustomCSS, 20, 40, 360, 260, BitOR($WS_VSCROLL, 0x0004))  ; CSS Edit
+    GUICtrlCreateTabItem('Theme')
+    $aLabel[0] = GUICtrlCreateLabel('Slider primary color', 30, 40, 160, 25, 0x200)
+    $aLabel[1] = GUICtrlCreateLabel('Slider alternate color', 30, 65, 160, 25, 0x200)
+    $aLabel[2] = GUICtrlCreateLabel('Slider selection color', 30, 90, 160, 25, 0x200)
+    $aLabel[3] = GUICtrlCreateLabel('Inputs background color', 30, 115, 160, 25, 0x200)
+    $aLabel[4] = GUICtrlCreateLabel('Inputs text color', 30, 140, 160, 25, 0x200)
+    $aLabel[5] = GUICtrlCreateLabel('Labels text color', 30, 165, 160, 25, 0x200)
+    $aLabel[6] = GUICtrlCreateLabel('Frame color', 30, 190, 160, 25, 0x200)
+    $aColorPicker[0] = GUICtrlCreateLabel('', 190, 42, 25, 20, 0x1000)  ; Primary color
+    $aColorPicker[1] = GUICtrlCreateLabel('', 190, 67, 25, 20, 0x1000)  ; Alternate color
+    $aColorPicker[2] = GUICtrlCreateLabel('', 190, 92, 25, 20, 0x1000)  ; Selection color
+    $aColorPicker[3] = GUICtrlCreateLabel('', 190, 117, 25, 20, 0x1000) ; Inputs Background Color
+    $aColorPicker[4] = GUICtrlCreateLabel('', 190, 142, 25, 20, 0x1000) ; Inputs Text Color
+    $aColorPicker[5] = GUICtrlCreateLabel('', 190, 167, 25, 20, 0x1000) ; Labels Text Color
+    $aColorPicker[6] = GUICtrlCreateLabel('', 190, 192, 25, 20, 0x1000) ; Frame Color
+    $cFontGroup = GUICtrlCreateGroup(' Font ', 20, 220, 360, 80)
+    $aLabel[7] = GUICtrlCreateLabel('Font size', 30, 235, 90, 25, 0x200)
+    $aLabel[8] = GUICtrlCreateLabel('Font width', 210, 235, 90, 25, 0x200)
+    $aLabel[9] = GUICtrlCreateLabel('Font name', 30, 265, 90, 25, 0x200)
+    $aInput[1] = GUICtrlCreateInput($aFontSettings[0], 120, 235, 60, 25, 0x0801)    ; Font size
+    $aInput[2] = GUICtrlCreateInput($aFontSettings[1], 300, 235, 60, 25, 0x0801)    ; Font width
+    $aInput[3] = GUICtrlCreateInput($aFontSettings[2], 120, 265, 170, 25, 0x0800)   ; Font name
+    $aButton[0] = GUICtrlCreateButton('..', 300, 265, 60, 25)                       ; Select font
+    GUICtrlCreateGroup('', -99, -99, 1, 1)
+    GUICtrlCreateTabItem('Workspace')
+    $aLabel[10] = GUICtrlCreateLabel('Current workspace size', 30, 40, 150, 25, 0x200)
+    $aLabel[11] = GUICtrlCreateLabel(GetWorkspaceSize(), 190, 40, 100, 25, 0x200)
+    $aCheckbox[0] = GUICtrlCreateCheckbox('Clean up workspace', 30, 65, 160, 25)                    ; Delete resources
+    $aCheckbox[1] = GUICtrlCreateCheckbox('Delete application settings on exit', 30, 90, 250, 25)   ; Delete config
+    GUICtrlCreateTabItem('Info')
+    $aLabel[12] = GUICtrlCreateLabel('Application version: ' & $sVersion, 30, 40, 300, 25, 0x200)
+    $aLabel[13] = GUICtrlCreateLabel('Author: Andreik (AutoIt Forum)', 30, 65, 300, 25, 0x200)
+    $aInput[4] = GUICtrlCreateEdit('', 30, 90, 340, 200, BitOR($WS_VSCROLL, 0x0800))                ; Credits
+    GUICtrlCreateTabItem('')
+    $aButton[1] = GUICtrlCreateButton('Save', 10, 320, 120, 30)      ; Save
+    $aButton[2] = GUICtrlCreateButton('Reset', 140, 320, 120, 30)    ; Reset
+    $aButton[3] = GUICtrlCreateButton('Cancel', 270, 320, 120, 30)   ; Cancel
+    ; Set styles
+    For $Index = 0 To UBound($aLabel) - 1
+        GUICtrlSetFont($aLabel[$Index], $aFontSettings[0], $aFontSettings[1], 0, $aFontSettings[2])
+        GUICtrlSetColor($aLabel[$Index], $aColors[5])
+    Next
+    For $Index = 0 To UBound($aButton) - 1
+        GUICtrlSetFont($aButton[$Index], $aFontSettings[0], $aFontSettings[1], 0, $aFontSettings[2])
+        If $Index = 0 Then
+            GUICtrlSetCursor($aButton[$Index], 0)
+            GUICtrlSetTip($aButton[$Index], 'Select font')
+        EndIf
+    Next
+    For $Index = 0 To UBound($aInput) - 1
+        GUICtrlSetFont($aInput[$Index], $aFontSettings[0], $aFontSettings[1], 0, $aFontSettings[2])
+        GUICtrlSetBkColor($aInput[$Index], $aColors[3])
+        GUICtrlSetColor($aInput[$Index], $aColors[4])
+        If $Index = 4 Then GUICtrlSetData($aInput[$Index], $sCredits)
+    Next
+    For $Index = 0 To UBound($aColorPicker) - 1
+        GUICtrlSetBkColor($aColorPicker[$Index], $aColors[$Index])
+        GUICtrlSetCursor($aColorPicker[$Index], 0)
+    Next
+    For $Index = 0 To UBound($aCheckbox) - 1
+        GUICtrlSetFont($aCheckbox[$Index], $aFontSettings[0], $aFontSettings[1], 0, $aFontSettings[2])
+        GUICtrlSetState($aCheckbox[$Index], ($aOptSettings[$Index] ? $GUI_CHECKED : $GUI_UNCHECKED))
+    Next
+    GUICtrlSetFont($cFontGroup, $aFontSettings[0], $aFontSettings[1], 0, $aFontSettings[2])
     GUISetState(@SW_SHOW, $hGUI)
+
     While True
-        Switch GUIGetMsg()
-            Case $cPrimaryColor
-                $iTemp = _ChooseColor(2, $iPrimaryColor, 2, $hGUI)
+        $iMsg = GUIGetMsg()
+        Switch $iMsg
+            Case $aColorPicker[0] To $aColorPicker[6]   ; Color pickers
+                $iSelect = $iMsg - $aColorPicker[0]
+                $vTemp = _ChooseColor(2, $aColorSettings[$iSelect], 2, $hGUI)
                 If Not @error Then
-                    $iPrimaryColor = $iTemp
-                    GUICtrlSetBkColor($cPrimaryColor, $iPrimaryColor)
+                    $aColorSettings[$iSelect] = $vTemp
+                    GUICtrlSetBkColor($aColorPicker[$iSelect], $aColorSettings[$iSelect])
                 EndIf
-            Case $cAlternateColor
-                $iTemp = _ChooseColor(2, $iAlternateColor, 2, $hGUI)
+            Case $aButton[0]                            ; Font select
+                $vTemp = _ChooseFont($aFontSettings[2], $aFontSettings[0], Default, $aFontSettings[1])
                 If Not @error Then
-                    $iAlternateColor = $iTemp
-                    GUICtrlSetBkColor($cAlternateColor, $iAlternateColor)
+                    $aFontSettings[0] = $vTemp[3]
+                    $aFontSettings[1] = $vTemp[4]
+                    $aFontSettings[2] = $vTemp[2]
+                    GUICtrlSetData($aInput[1], $aFontSettings[0])
+                    GUICtrlSetData($aInput[2], $aFontSettings[1])
+                    GUICtrlSetData($aInput[3], $aFontSettings[2])
                 EndIf
-            Case $cSelectionColor
-                $iTemp = _ChooseColor(2, $iSelectionColor, 2, $hGUI)
-                If Not @error Then
-                    $iSelectionColor = $iTemp
-                    GUICtrlSetBkColor($cSelectionColor, $iSelectionColor)
-                EndIf
-            Case $cSave
-                $sCSS = GUICtrlRead($cCSSEdit)
-                $fDeleteWS = (GUICtrlRead($cDeleteRes) = $GUI_CHECKED ? True : False)
-                $fDeleteCfg = (GUICtrlRead($cDeleteCfg) = $GUI_CHECKED ? True : False)
-                SaveSettings($sCSS, $iPrimaryColor, $iAlternateColor, $iSelectionColor, $fDeleteWS)
+            Case $aButton[1]                            ; Save button
+                $sCSS = GUICtrlRead($aInput[0])
+                $fDeleteWS = (GUICtrlRead($aCheckbox[0]) = $GUI_CHECKED ? True : False)
+                $fDeleteCfg = (GUICtrlRead($aCheckbox[1]) = $GUI_CHECKED ? True : False)
+                SaveSettings($sCSS, $fDeleteWS, $aColorSettings, $aFontSettings)
                 LoadSettings(True)
                 ExitLoop
-            Case $cReset
-                $iPrimaryColor = GetDefaultColor(0)
-                $iAlternateColor = GetDefaultColor(1)
-                $iSelectionColor = GetDefaultColor(2)
+            Case $aButton[2]                            ; Reset button
+                For $Index = 0 To UBound($aColorSettings) - 1
+                    $aColorSettings[$Index] = GetDefaultColor($Index)
+                Next
+                For $Index = 0 To UBound($aFontSettings) - 1
+                    $aFontSettings[$Index] = GetDefaultFont($Index)
+                Next
                 $sCSS = GetCustomCSS()
-                GUICtrlSetBkColor($cPrimaryColor, $iPrimaryColor)
-                GUICtrlSetBkColor($cAlternateColor, $iAlternateColor)
-                GUICtrlSetBkColor($cSelectionColor, $iSelectionColor)
-                GUICtrlSetData($cCSSEdit, $sCSS)
-                GUICtrlSetState($cDeleteRes, $GUI_UNCHECKED)
-                GUICtrlSetState($cDeleteCfg, $GUI_UNCHECKED)
-            Case $cCancel
+                For $Index = 0 To UBound($aLabel) - 1
+                    GUICtrlSetFont($aLabel[$Index], $aFontSettings[0], $aFontSettings[1], 0, $aFontSettings[2])
+                    GUICtrlSetColor($aLabel[$Index], $aColorSettings[5])
+                Next
+                For $Index = 0 To UBound($aButton) - 1
+                    GUICtrlSetFont($aButton[$Index], $aFontSettings[0], $aFontSettings[1], 0, $aFontSettings[2])
+                Next
+                For $Index = 0 To UBound($aInput) - 1
+                    GUICtrlSetFont($aInput[$Index], $aFontSettings[0], $aFontSettings[1], 0, $aFontSettings[2])
+                    GUICtrlSetBkColor($aInput[$Index], $aColorSettings[3])
+                    GUICtrlSetColor($aInput[$Index], $aColorSettings[4])
+                    If $Index = 0 Then GUICtrlSetData($aInput[$Index], $sCSS)
+                Next
+                For $Index = 0 To UBound($aColorPicker) - 1
+                    GUICtrlSetBkColor($aColorPicker[$Index], $aColorSettings[$Index])
+                    GUICtrlSetCursor($aColorPicker[$Index], 0)
+                Next
+                For $Index = 0 To UBound($aCheckbox) - 1
+                    GUICtrlSetFont($aCheckbox[$Index], $aFontSettings[0], $aFontSettings[1], 0, $aFontSettings[2])
+                    GUICtrlSetState($aCheckbox[$Index], $GUI_UNCHECKED)
+                Next
+                GUICtrlSetFont($cFontGroup, $aFontSettings[0], $aFontSettings[1], 0, $aFontSettings[2])
+            Case $aButton[3]                            ; Cancel button
                 ExitLoop
         EndSwitch
     WEnd
+
     WinActivate($hMain)
     GUIDelete($hGUI)
 EndFunc
