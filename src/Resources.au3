@@ -71,7 +71,7 @@ Func EPUB_Icon()
     Return Base64_Decode($sData)
 EndFunc
 
-Func Back_Icon($fFlip = False)
+Func Back_Icon($bFlip = False)
     Local $sData
     $sData &= 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAAn'
     $sData &= 'AAAAJwEqCZFPAAAE7mlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFj'
@@ -128,7 +128,7 @@ Func Back_Icon($fFlip = False)
     $sData &= 'mb5IAPIFUN7tHw5AHMVqZGSBAHR8sOOrAIrTMFiuRuaIU1aZ4SWOc5hqZxN2'
     $sData &= 'gCTSBPZdEADI4gDEUSkLeY7SewM2kC7TJr3I6DEEMkeeG/I3lOeu2hW/QJr2'
     $sData &= 'XFRQa2yHagD+AbcTsOg9IdsYAAAAAElFTkSuQmCC'
-    If $fFlip Then Return FlipImage(Base64_Decode($sData), 2)
+    If $bFlip Then Return FlipImage(Base64_Decode($sData), 2)
     Return Base64_Decode($sData)
 EndFunc
 
@@ -355,7 +355,7 @@ Func Refresh_Icon()
     Return Base64_Decode($sData)
 EndFunc
 
-Func Next_Icon($fFlip = False)
+Func Next_Icon($bFlip = False)
     Local $sData
     $sData &= 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7E'
     $sData &= 'AAAOxAGVKw4bAAAE7mlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFj'
@@ -406,14 +406,14 @@ Func Next_Icon($fFlip = False)
     $sData &= 'vc8h+qcg2oMQLh9Gu5dKq4KGMta0kiUDyG2A1Sqj0IQ6ayPyChq5lD7VltIr'
     $sData &= '3doZXr0YDuM0l1InX3zEtXIfTAUg/b8gDbBR8hfFRceEldoSVgAAAABJRU5E'
     $sData &= 'rkJggg=='
-    If $fFlip Then Return FlipImage(Base64_Decode($sData), 2)
+    If $bFlip Then Return FlipImage(Base64_Decode($sData), 2)
     Return Base64_Decode($sData)
 EndFunc
 
 Func Settings_Icon()
     Local $sData
-    $sData &= 'iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA7E'
-    $sData &= 'AAAOxAGVKw4bAAAE7mlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFj'
+    $sData &= 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAA7E'
+    $sData &= 'AAAOxAGVKw4bAAAGiGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFj'
     $sData &= 'a2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQi'
     $sData &= 'Pz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0'
     $sData &= 'az0iQWRvYmUgWE1QIENvcmUgNy4xLWMwMDAgNzkuZWRhMmIzZiwgMjAyMS8x'
@@ -427,11 +427,11 @@ Func Settings_Icon()
     $sData &= 'PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VF'
     $sData &= 'dmVudCMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDIzLjEg'
     $sData &= 'KFdpbmRvd3MpIiB4bXA6Q3JlYXRlRGF0ZT0iMjAyNC0wMy0wNlQxOTowMzoy'
-    $sData &= 'NyswMjowMCIgeG1wOk1vZGlmeURhdGU9IjIwMjQtMDMtMDZUMTk6MDQ6NDAr'
-    $sData &= 'MDI6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjQtMDMtMDZUMTk6MDQ6NDAr'
+    $sData &= 'NyswMjowMCIgeG1wOk1vZGlmeURhdGU9IjIwMjQtMDMtMTJUMTM6NTg6NDcr'
+    $sData &= 'MDI6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjQtMDMtMTJUMTM6NTg6NDcr'
     $sData &= 'MDI6MDAiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiBwaG90b3Nob3A6Q29sb3JN'
-    $sData &= 'b2RlPSIzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOmIyNzU1MDQxLTdm'
-    $sData &= 'NTQtYjI0MS04MzE1LTFkMWJjNDg3NzBmNCIgeG1wTU06RG9jdW1lbnRJRD0i'
+    $sData &= 'b2RlPSIzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjQxZTM2OTQ3LTRi'
+    $sData &= 'ZjEtMGU0MC05NjIxLWE4Y2JjMjEzZTQzOCIgeG1wTU06RG9jdW1lbnRJRD0i'
     $sData &= 'eG1wLmRpZDpiMjc1NTA0MS03ZjU0LWIyNDEtODMxNS0xZDFiYzQ4NzcwZjQi'
     $sData &= 'IHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpiMjc1NTA0MS03'
     $sData &= 'ZjU0LWIyNDEtODMxNS0xZDFiYzQ4NzcwZjQiPiA8eG1wTU06SGlzdG9yeT4g'
@@ -439,37 +439,40 @@ Func Settings_Icon()
     $sData &= 'dDppbnN0YW5jZUlEPSJ4bXAuaWlkOmIyNzU1MDQxLTdmNTQtYjI0MS04MzE1'
     $sData &= 'LTFkMWJjNDg3NzBmNCIgc3RFdnQ6d2hlbj0iMjAyNC0wMy0wNlQxOTowMzoy'
     $sData &= 'NyswMjowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9w'
-    $sData &= 'IDIzLjEgKFdpbmRvd3MpIi8+IDwvcmRmOlNlcT4gPC94bXBNTTpIaXN0b3J5'
-    $sData &= 'PiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4g'
-    $sData &= 'PD94cGFja2V0IGVuZD0iciI/Pq87hOkAAAOeSURBVDgRBcE7iFxlGIDh9/v+'
-    $sData &= '/5yZ2ZnZy2QXVwxrDIlEDYIoCCJYKIikkICInZ2XwkKLREWiVhZihEDsrCxs'
-    $sData &= 'BBXEQEyRwibGwksQTALKmmxidt3d2bmdc/7L5/MIZjz/9WWO/rbO7lIX0GXN'
-    $sData &= '6dXo5KXFqftOU3rn6s0hmptTLOcXyfqVGJ+B3envG/LXr4e48MVzeAAQ1AQx'
-    $sData &= 'dWCXTNxBZ8Z4To9KYEOXUkhmHxYGhj2E8IrBQUMrAAAPYGIYhglJDA8GBikH'
-    $sData &= 'qticic0UACtKAABvRoUZZgqAB0OzkbyAyLyAhRCJIdKf79Lvz6E5Mp1MmE0r'
-    $sData &= 'nHcURRHE8kCEbQAAefnzH3qdmf1UNAmcLtV1s+q8Y21tlcHyAuqErTs71FXN'
-    $sData &= '3nDEzfVbhBhptcpNcWmzmZZ+dHvhcb+8Vb+ZVR5oWp7URJxzHHnwPgbLPZo6'
-    $sData &= 'UlfxegzR1Mnhu/ffRbfX5c8/rhFCWHGpXGl1axaOrr+ts055KjlFshFDZO3A'
-    $sData &= 'KoPlPsPtZpfIMTU7rJrv91mfnQzr/+YXe+xfu4cUE6KZHJXxsHdSIZ6OTkkh'
-    $sData &= '0e11WBz0qWY1VreO57r4HgFDKMjnW5KOVbOaxcE83V6XGCIYIPKpZqcns5M3'
-    $sData &= 'Ukp05tqUhSc2dl2KcLHOkZQFSzCqMlWSSznalaLwtOfapJQBO4Hxli8aI2mq'
-    $sData &= 'EgKAmSCKtecCqFDPDDGl1wVVZRZzNgMBELAslZOIR3hf4APnlGpaE0JAnR7u'
-    $sData &= 'aOtJ5/THympSgm6/xBU8Ot0ND8cQmc0qnFMQzhiyqmR5T0zwhWM8mbK7O6Ld'
-    $sData &= 'KRk18dtJk54WAQF2xs1Tm3v1uXa7xXB3j8logvceREDlXZ3NFR9pyghQOMc/'
-    $sData &= 'f99mb3dCp1cOsuYLonZFvP0ezS62is7KZDzhxvoGzjnMlKIIaBE+kdfOnu8X'
-    $sData &= 'Tfolq6g5vxAn1ZIvlLUDqwyWF1EVtu5sU1cNe8MRN9Y3CCFStso9lfRfDN5t'
-    $sData &= 'bux7xJcxjurSH3Ipmlmz0m75y3VI916/eoP52zuUrYLtrS3G4wmzyQx1jnar'
-    $sData &= '2FDiY52lya1rPx9xF798JvnsBBMxyYKzZjNLGYrSU5ijnjWMdyb8u72LkGm3'
-    $sData &= 'SxDFLCPJbmnOpKQJwEsGbxFRI0lLJVFghgDOO0KPEyuxiVWS000ocWQMcYGy'
-    $sData &= 'ZdnXhU8AeDFDNBN9Rk2yi/4JQ17XrC+MBvW5SdF8vHTNI8gKSxzP0X1jImed'
-    $sData &= 'ai3i8Q4A/gfWG/drXK4oEwAAAABJRU5ErkJggg=='
+    $sData &= 'IDIzLjEgKFdpbmRvd3MpIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZl'
+    $sData &= 'ZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo1MTVjYTBkYS1lODhlLTdm'
+    $sData &= 'NDQtODEwNy02OThjYzdlOGFjMTUiIHN0RXZ0OndoZW49IjIwMjQtMDMtMTJU'
+    $sData &= 'MTM6NTY6MTMrMDI6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBo'
+    $sData &= 'b3Rvc2hvcCAyMy4xIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8'
+    $sData &= 'cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9'
+    $sData &= 'InhtcC5paWQ6NDFlMzY5NDctNGJmMS0wZTQwLTk2MjEtYThjYmMyMTNlNDM4'
+    $sData &= 'IiBzdEV2dDp3aGVuPSIyMDI0LTAzLTEyVDEzOjU4OjQ3KzAyOjAwIiBzdEV2'
+    $sData &= 'dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjMuMSAoV2luZG93'
+    $sData &= 'cykiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPC9yZGY6U2VxPiA8L3htcE1NOkhp'
+    $sData &= 'c3Rvcnk+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBt'
+    $sData &= 'ZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+psot5gAAAopJREFUKJEFwburXFUU'
+    $sData &= 'B+DfXnufxz6PmTMZryCmSBADsUgRQa74TCCVBFEwIIKi/4AWYmVhI9HeNmgn'
+    $sData &= 'txCRtKaQgKBEfEBAMCTEEEjMzJzHnJnz2nstv0+9d+VHZK0HACKRQyb5JPK6'
+    $sData &= 'YIf3H67Xzk/jN5Sgw6S+hJKfocSX95YwogBWgGZhEH1GIhc6duiH8Uo3taII'
+    $sData &= '562EYI1MgHPiCSKAYVKASGAUpU6B2nqHMAyQF/acdwnqqsF2cEjTFEGEY5NI'
+    $sData &= '452ZTNy5M1qpy54lb8r27GKR4dTpE4iiEOvV42iaGndv30e5rp+b6+QHUlSn'
+    $sData &= 'RfupmbX+Kzbqpc2+R1HkOHt4GqmNH5ab7REEcnBwcGmxXD7x+69/2GrTvjAv'
+    $sData &= 'UiyOb5Y0hrroJo+ACKeeOY7AxHdXD/bvDP304dQPH7Xr5u1A052nnj6JMNAY'
+    $sData &= 'xwHTEOfkiS8O7K/N8gRJbrGr+u95wjVFCooIYPmpb7vvbJYgm2eYRnfde7pI'
+    $sData &= 'muGUCEMpeEcIQ5HECiAAQ2BTjTjW4p1AKQUR5RWzIxJ1NTDmQtvssG93sHn8'
+    $sData &= 'Bki9wiIAC7zCi8baN7vdHm2zhQnMq9rwVTOR7q0G6n7C7X/uo1jOT9gi+Xas'
+    $sData &= '+CiMQjFxcKnrpif/vXMP/cA4tjTQ2o362dfevUHASZOEq2bTPlavamOzKA8D'
+    $sData &= 'c9h1/fPVpp79ffMWyrIcisL+5l1wc/Og+NgQ5E+n8bomyedze1SVu/N/3biF'
+    $sData &= 'JAnxaF2iKUsIe8yy7Jcont6qHiX1tpoPBgAUY2CWgRRN2SyBdx5ltb3ebVei'
+    $sData &= 'jX45jjIQ4Ie9+U+goAMHAwAkDAAEkc+NI+ZUzwIbfLAYDXdd8PWkVMcOXwBG'
+    $sData &= 'R/HotWb8D3SJU0jMla1xAAAAAElFTkSuQmCC'
     Return Base64_Decode($sData)
 EndFunc
 
 Func Jump_Icon()
     Local $sData
-    $sData &= 'iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA7E'
-    $sData &= 'AAAOxAGVKw4bAAAE7mlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFj'
+    $sData &= 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAA7E'
+    $sData &= 'AAAOxAGVKw4bAAAFu2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFj'
     $sData &= 'a2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQi'
     $sData &= 'Pz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0'
     $sData &= 'az0iQWRvYmUgWE1QIENvcmUgNy4xLWMwMDAgNzkuZWRhMmIzZiwgMjAyMS8x'
@@ -483,11 +486,11 @@ Func Jump_Icon()
     $sData &= 'PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VF'
     $sData &= 'dmVudCMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDIzLjEg'
     $sData &= 'KFdpbmRvd3MpIiB4bXA6Q3JlYXRlRGF0ZT0iMjAyNC0wMy0wOFQxODoxMTo0'
-    $sData &= 'OSswMjowMCIgeG1wOk1vZGlmeURhdGU9IjIwMjQtMDMtMDhUMTg6MTY6MDEr'
-    $sData &= 'MDI6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjQtMDMtMDhUMTg6MTY6MDEr'
+    $sData &= 'OSswMjowMCIgeG1wOk1vZGlmeURhdGU9IjIwMjQtMDMtMTJUMTQ6MDA6MjEr'
+    $sData &= 'MDI6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjQtMDMtMTJUMTQ6MDA6MjEr'
     $sData &= 'MDI6MDAiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiBwaG90b3Nob3A6Q29sb3JN'
-    $sData &= 'b2RlPSIzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOmQ0MzZiOGJmLTc5'
-    $sData &= 'ZDktMDg0Ny1hMGVhLWM2N2RkZTJkNjViMCIgeG1wTU06RG9jdW1lbnRJRD0i'
+    $sData &= 'b2RlPSIzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjBmZWYzNTM3LTcw'
+    $sData &= 'NmQtNWM0OC1hMTdmLTU2YjBkYmRlNWUxMCIgeG1wTU06RG9jdW1lbnRJRD0i'
     $sData &= 'eG1wLmRpZDpkNDM2YjhiZi03OWQ5LTA4NDctYTBlYS1jNjdkZGUyZDY1YjAi'
     $sData &= 'IHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpkNDM2YjhiZi03'
     $sData &= 'OWQ5LTA4NDctYTBlYS1jNjdkZGUyZDY1YjAiPiA8eG1wTU06SGlzdG9yeT4g'
@@ -495,21 +498,24 @@ Func Jump_Icon()
     $sData &= 'dDppbnN0YW5jZUlEPSJ4bXAuaWlkOmQ0MzZiOGJmLTc5ZDktMDg0Ny1hMGVh'
     $sData &= 'LWM2N2RkZTJkNjViMCIgc3RFdnQ6d2hlbj0iMjAyNC0wMy0wOFQxODoxMTo0'
     $sData &= 'OSswMjowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9w'
-    $sData &= 'IDIzLjEgKFdpbmRvd3MpIi8+IDwvcmRmOlNlcT4gPC94bXBNTTpIaXN0b3J5'
-    $sData &= 'PiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4g'
-    $sData &= 'PD94cGFja2V0IGVuZD0iciI/PjZq2iEAAAI+SURBVDgRrcE/i1xlGMbh3/O8'
-    $sData &= '75md2Zmd3Y1JcAtBERwxldiYIlErCxHTWIg2ARs/h9/CImon2AQEsZB0iRiE'
-    $sData &= 'ELKpEgQLiwTcPzPjjHPOeZ/bmaC4ihMI5LpMEk9D/vTbm+ddvA+4GXRd7B92'
-    $sData &= 'uPVbh34WJ00b17ndhZ/bWXgtj05CgckivssmPhc2YkmC5JBNKAQSJylENhhs'
-    $sData &= 'GOPaCPGIzD9wsBFPSOK/zjowYQ0DikQJYTzW1FkjmbEowdG8IJaMx3KWIkRV'
-    $sData &= 'ZYbDPiuSmNYFM+PrD0d88vqz/Hyw4BGBJLaGfTY2OkQEKx4RDAY9FouaG9dv'
-    $sData &= 'U0oh5cS0Ljy3vcHLZ3t0s9OUYMWSkVLih+u3OTqaMNweEBH45maX8XjKl1e+'
-    $sData &= '4eaPd6k6FSkl9rY6fH/vkC9+esiwm8hurJgb3W6H/Tv3ufLZVR4+OKA/2MQx'
-    $sData &= 'IwKapsX4Rxtis0r0O4m2CPEXAQZmRtO0RAQG5Nnvc3Z3B1z++D3279ynqRtK'
-    $sData &= 'ybhlmhBu4A51G7iBJP6YN4xGz/POuxfY2zvD8fEEX2IymdHv97j45muklCht'
-    $sData &= '4cG04a0Xt3n7pR0uvrDNpVee4ddxjUKUUrjwxqucPr3D8fEEdyez5O7UdUNd'
-    $sData &= 'N2xVYGac6mUOZi0ffXUPIZoizvQroMHMmExmrLg7K5k1cjLmTXA4bxHQzU6V'
-    $sData &= 'nHUysMX/kMAMepXzN4l1+g78whMy49/EOLvicjG/5MgBhWStDDOTTJxkBq3w'
-    $sData &= 'WS0roagSCkAlXTNJPA1/AvtHCI3yps7AAAAAAElFTkSuQmCC'
+    $sData &= 'IDIzLjEgKFdpbmRvd3MpIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZl'
+    $sData &= 'ZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDowZmVmMzUzNy03MDZkLTVj'
+    $sData &= 'NDgtYTE3Zi01NmIwZGJkZTVlMTAiIHN0RXZ0OndoZW49IjIwMjQtMDMtMTJU'
+    $sData &= 'MTQ6MDA6MjErMDI6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBo'
+    $sData &= 'b3Rvc2hvcCAyMy4xIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8'
+    $sData &= 'L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPC9yZGY6RGVzY3JpcHRpb24+'
+    $sData &= 'IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz75'
+    $sData &= 'oeImAAAB+ElEQVQoFQXBu04UYRjH4d/77jfLLOzBXQ4q0UopiCZWWmintljo'
+    $sData &= 'PRhrL8HOnoQEL8HEjtoQGiUeSo2FiVYchT2wzMzO9/19Hnuz8/mZiycNZ5aZ'
+    $sData &= '2DvI+TMJdDIBMJ65Vlu1Pbw2dbCEe6aoTwF4BDwGZmZgAAIAAITMsOBYTCaJ'
+    $sData &= 'DGgGk70WBAncwBGSMAkBkjCJvGFMZSQBZncdGAKkJASYGW7GwaRiVEQyNwQk'
+    $sData &= 'QUoCADh2SVVKot1pERqOkrioIveuL7C2nDOqIi7h7nS680giJdUOWKczz/B8'
+    $sData &= 'QlWUXNSJKort57fYWB/w96yk2QyU5Yyzf0PanXncMR8Menz7+oOtzfdcljNW'
+    $sData &= '+guMipqdn2fUUWRuNOcyzGF76wN7u98ZLF7BzY0YEzFGJGhlDaZV5NdxwbCs'
+    $sData &= 'qZMIbggjxkiKEcMIpyfn3H9wh7XbN8ibcHgyoZsHNtb75JnxdveI49El3hIv'
+    $sData &= 'X72gv9Tn9PScAGgymbK41KNRlxRVzWqvxcffI4LDzV6ToiqYyzOWuz2G4ykp'
+    $sData &= 'JQUzywDGoykLGbTzJkclvNs/RIh2ntOdC8zqgsviAsxw90YABgDuBiZIkCSu'
+    $sData &= 'tjMAxjMQ4A7uRhQAK8GkTZk9NVRJImJgBi4MwCABVZRLSmZkKfp+APaABqgS'
+    $sData &= 'IACQAAAACYsJA2RGBnz5Dw1qBiI/Rb81AAAAAElFTkSuQmCC'
     Return Base64_Decode($sData)
 EndFunc
