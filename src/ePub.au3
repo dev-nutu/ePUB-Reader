@@ -157,10 +157,10 @@ Func ePUB_ReadOPF($mEPUB, $aOPF)
     Return SetError(0, $iChapters, $aQuery)
 EndFunc
 
-Func ePUB_Release($mEPUB, ByRef $aCollector, $fSave = False)
+Func ePUB_Release($mEPUB, ByRef $aCollector, $bSave = False)
     If Not IsMap($mEPUB) Then Return SetError(1, 0, False)
     If MapExists($mEPUB, 'Dir') Then
-        If $fSave Then
+        If $bSave Then
             $aCollector[0] += 1
             ReDim $aCollector[$aCollector[0] + 1]
             $aCollector[$aCollector[0]] = $__sWorkingDir & '\' & $__sInternalName & '\' & $mEPUB['Dir']
