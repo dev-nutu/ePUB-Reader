@@ -2,7 +2,7 @@
 #AutoIt3Wrapper_Icon=..\assets\epub.ico
 #AutoIt3Wrapper_Outfile=..\bin\ePUB Reader.exe
 #AutoIt3Wrapper_Res_Description=ePUB Reader
-#AutoIt3Wrapper_Res_Fileversion=1.1.0.0
+#AutoIt3Wrapper_Res_Fileversion=1.2.0.0
 #AutoIt3Wrapper_Res_ProductName=ePUB Reader
 #AutoIt3Wrapper_Res_CompanyName=Andreik
 #AutoIt3Wrapper_Res_LegalCopyright=© 2024 Andreik (AutoIt Forum)
@@ -110,8 +110,8 @@ WEnd
 
 SetSliderLabel($mSlider, 'Operation: Release resources')
 ePUB_Release($mEPUB, $aCollector)
-If $fDeleteRes Then CleanUpWorkspace()
-If $fDeleteCfg Then DeleteConfig()
+If $bDeleteRes Then CleanUpWorkspace()
+If $bDeleteCfg Then DeleteConfig()
 _GDIPlus_Shutdown()
 _SQLite_Shutdown()
 
@@ -130,10 +130,9 @@ EndFunc
 
 Func NavigateBackward()
     If IsMap($mEPUB) Then
-        If $fAllowBack Then
+        If $bAllowBack Then
             SetSliderLabel($mSlider, 'Operation: Navigate backward')
             _IEAction($oIE, 'back')
-            UpdateSlider()
         Else
             SetSliderLabel($mSlider, 'Error: Not allowed')
         EndIf
@@ -165,10 +164,9 @@ EndFunc
 
 Func NavigateForward()
     If IsMap($mEPUB) Then
-        If $fAllowForward Then
+        If $bAllowForward Then
             SetSliderLabel($mSlider, 'Operation: Navigate forward')
             _IEAction($oIE, 'forward')
-            UpdateSlider()
         Else
             SetSliderLabel($mSlider, 'Error: Not allowed')
         EndIf
@@ -181,12 +179,12 @@ Func _IEEvent_NavigateComplete2($oIEpDisp, $sIEURL)
     If IsMap($mEPUB) Then UpdateSlider()
 EndFunc
 
-Func _IEEvent_CommandStateChange($sCommand, $fEnable)
+Func _IEEvent_CommandStateChange($sCommand, $bEnable)
     Switch $sCommand
         Case 0x01
-            $fAllowForward = $fEnable
+            $bAllowForward = $bEnable
         Case 0x02
-			$fAllowBack = $fEnable
+			$bAllowBack = $bEnable
     EndSwitch
 EndFunc
 
@@ -194,13 +192,14 @@ Func UpdateSlider()
     _IELoadWait($oIE)
     Local $sLocation = _IEPropertyGet($oIE, 'locationname')
     Local $aChapters = $mEPUB['Chapters']
-    Local $aMatch
+    Local $aChapter, $aMatch
     For $Index = 1 To $mEPUB['NumOfChapters']
-        $aMatch = StringRegExp($sLocation, '(?:.*)(' & EscapeRegEx($aChapters[$Index][2]) & ')(?:.*)', 3)
-        If IsArray($aMatch) Then
-            SetActiveChapter($mSlider, $Index)
-            ExitLoop
-        EndIf
+        $aChapter = StringRegExp($aChapters[$Index][2], '(?:\/*?)([a-zA-Z0-9\_\-]*\.[a-zA-Z]+)(?:.*?)$', 3)
+        If Not IsArray($aChapter) Then ContinueLoop
+        $aMatch = StringRegExp($sLocation, '(?:.*)(' & EscapeRegEx($aChapter[0]) & ')(?:.*)', 3)
+        If Not IsArray($aMatch) Then ContinueLoop
+        SetActiveChapter($mSlider, $Index)
+        ExitLoop
     Next
     SetSliderLabel($mSlider, 'Operation: Idle')
 EndFunc
@@ -253,8 +252,18 @@ Func Load_ePUB($sPath)
     Else
         $mEPUB['NumOfChapters'] = @extended
     EndIf
-    Local $aMetadata = SQLite_Query($mEPUB['DB'], 'SELECT value FROM metadata WHERE meta = "title";')
-    If @extended = 1 Then WinSetTitle($hMain, '' , $sAppTitle & ' - ' & StringStripWS($aMetadata[1][0], 7))
+    Local $aMetadata = SQLite_Query($mEPUB['DB'], 'SELECT meta, group_concat(value,", ") FROM metadata WHERE meta IN ("creator", "title") GROUP BY meta ORDER BY meta DESC;')
+    Switch @extended
+        Case 1      ; Book title
+            WinSetTitle($hMain, '' , $sAppTitle & ($aMetadata[1][0] = 'title' ? ' - ' & StringStripWS($aMetadata[1][1], 7) : ''))
+        Case 2      ; Book title and authors
+            Local $sAuthors = $aMetadata[2][1]
+            $sAuthors = (StringRight($sAuthors, 2) = ', ' ? StringTrimRight($sAuthors, 2) : $sAuthors)
+            $sAuthors = StringStripWS(StringReplace($sAuthors, ';', ''), 7)
+            WinSetTitle($hMain, '' , $sAppTitle & ' - ' & StringStripWS($aMetadata[1][1], 7) & ' by ' & $sAuthors)
+        Case Else   ; App title
+            WinSetTitle($hMain, '' , $sAppTitle)
+    EndSwitch
     If $mEPUB['NumOfChapters'] Then
         $mEPUB['Chapters'] = $aChapters
         SetSliderLimits($mSlider, 1, $mEPUB['NumOfChapters'])
@@ -329,8 +338,8 @@ Func ResizeControls($iWidth, $iHeight)
     GUICtrlSetPos($mSlider['Label'], 370, $iHeight - 55 + $mSlider['ElementHeigth'], $iWidth - $mSlider['ElementHeigth'] * 2 - 510, $mSlider['ElementHeigth'])
     GUICtrlSetPos($mSlider['Prev'], $iWidth - 120, $iHeight - 55, $mSlider['ElementHeigth'] * 2, $mSlider['ElementHeigth'] * 2)
     GUICtrlSetPos($mSlider['Next'], $iWidth - 60, $iHeight - 55, $mSlider['ElementHeigth'] * 2, $mSlider['ElementHeigth'] * 2)
-    GUICtrlSetPos($mSlider['Config'], $iWidth - $mSlider['ElementHeigth'] - 130, $iHeight - 55 + $mSlider['ElementHeigth'], $mSlider['ElementHeigth'], $mSlider['ElementHeigth'])
-    GUICtrlSetPos($mSlider['Jump'], $iWidth - $mSlider['ElementHeigth'] * 2 - 130, $iHeight - 55 + $mSlider['ElementHeigth'], $mSlider['ElementHeigth'], $mSlider['ElementHeigth'])
+    GUICtrlSetPos($mSlider['Config'], $iWidth - $mSlider['ElementHeigth'] - 129, $iHeight - 54 + $mSlider['ElementHeigth'], $mSlider['ElementHeigth'] - 2, $mSlider['ElementHeigth'] - 2)
+    GUICtrlSetPos($mSlider['Jump'], $iWidth - $mSlider['ElementHeigth'] * 2 - 128, $iHeight - 54 + $mSlider['ElementHeigth'], $mSlider['ElementHeigth'] - 2, $mSlider['ElementHeigth'] - 2)
     $mSlider['W'] = $iWidth - 500
     $mSlider['Y'] = $iHeight - 55
     If $mSlider['Min'] <> Null And $mSlider['Max'] <> Null Then
@@ -452,7 +461,7 @@ Func GetDefaultFont($iType)
     EndSwitch
 EndFunc
 
-Func LoadSettings($fApply = False)
+Func LoadSettings($bApply = False)
     Local $sCfgDB = $__sWorkingDir & '\' & $__sInternalName & '\config.sqlite'
     If FileExists($sCfgDB) Then
         Local $mSettings[]
@@ -468,7 +477,7 @@ Func LoadSettings($fApply = False)
         For $Index = 0 To UBound($aFont) - 1
             $aFont[$Index] = (MapExists($mSettings, $aFontProperty[$Index]) ? $mSettings[$aFontProperty[$Index]] : GetDefaultFont($Index))
         Next
-        $fDeleteRes = (MapExists($mSettings, 'DeleteRes') ? ($mSettings['DeleteRes'] = 'True' ? True : False) : False)
+        $bDeleteRes = (MapExists($mSettings, 'DeleteRes') ? ($mSettings['DeleteRes'] = 'True' ? True : False) : False)
         _SQLite_Close($hDB)
     Else
         $sCustomCSS = GetCustomCSS()
@@ -478,12 +487,12 @@ Func LoadSettings($fApply = False)
         For $Index = 0 To UBound($aFont) - 1
             $aFont[$Index] = GetDefaultFont($Index)
         Next
-        $fDeleteRes = False
+        $bDeleteRes = False
     EndIf
-    If $fApply Then ApplySettings()
+    If $bApply Then ApplySettings()
 EndFunc
 
-Func SaveSettings($sCSS, $fDeleteWS, $aColorSettings, $aFontSettings)
+Func SaveSettings($sCSS, $bDeleteWS, $aColorSettings, $aFontSettings)
     Local $iColorProperties = UBound($aColorSettings)
     If UBound($aColorProperty) <> $iColorProperties Then
         SetSliderLabel($mSlider, 'Error: Invalid color properties')
@@ -495,7 +504,7 @@ Func SaveSettings($sCSS, $fDeleteWS, $aColorSettings, $aFontSettings)
         Return SetError(2, 0, False)
     EndIf
     Local $sColor, $sFont
-    Local $sDelete = ($fDeleteWS ? 'True' : 'False')
+    Local $sDelete = ($bDeleteWS ? 'True' : 'False')
     Local $sPrefix = 'INSERT INTO settings(property, value) VALUES'
     Local $sConflict = ' ON CONFLICT(property) DO UPDATE SET value = '
     Local $bCreateTable = (FileExists($__sWorkingDir & '\' & $__sInternalName & '\config.sqlite') ? False : True)
@@ -538,10 +547,10 @@ EndFunc
 
 Func Settings()
     ; Local variables
-    Local $vTemp, $sCSS, $fDeleteWS, $iMsg, $iSelect, $cFontGroup
+    Local $vTemp, $sCSS, $bDeleteWS, $iMsg, $iSelect, $cFontGroup
     Local $aLabel[14], $aButton[4], $aInput[5], $aColorPicker[7], $aCheckbox[2]
     Local $aColorSettings = $aColors
-    Local $aOptSettings[2] = [$fDeleteRes, $fDeleteCfg]
+    Local $aOptSettings[2] = [$bDeleteRes, $bDeleteCfg]
     Local $aFontSettings = $aFont
     Local $sCredits = 'Epub icons created by shohanur.rahman13 - Flaticon (https://www.flaticon.com/free-icons/epub)' & @CRLF & @CRLF
     $sCredits &= 'Start icons created by hqrloveq - Flaticon (https://www.flaticon.com/free-icons/start)' & @CRLF & @CRLF
@@ -557,20 +566,20 @@ Func Settings()
     GUICtrlCreateTabItem('CSS')
     $aInput[0] = GUICtrlCreateEdit($sCustomCSS, 20, 40, 360, 260, BitOR($WS_VSCROLL, 0x0004))  ; CSS Edit
     GUICtrlCreateTabItem('Theme')
-    $aLabel[0] = GUICtrlCreateLabel('Slider primary color', 30, 40, 160, 25, 0x200)
-    $aLabel[1] = GUICtrlCreateLabel('Slider alternate color', 30, 65, 160, 25, 0x200)
-    $aLabel[2] = GUICtrlCreateLabel('Slider selection color', 30, 90, 160, 25, 0x200)
-    $aLabel[3] = GUICtrlCreateLabel('Inputs background color', 30, 115, 160, 25, 0x200)
-    $aLabel[4] = GUICtrlCreateLabel('Inputs text color', 30, 140, 160, 25, 0x200)
-    $aLabel[5] = GUICtrlCreateLabel('Labels text color', 30, 165, 160, 25, 0x200)
-    $aLabel[6] = GUICtrlCreateLabel('Frame color', 30, 190, 160, 25, 0x200)
-    $aColorPicker[0] = GUICtrlCreateLabel('', 190, 42, 25, 20, 0x1000)  ; Primary color
-    $aColorPicker[1] = GUICtrlCreateLabel('', 190, 67, 25, 20, 0x1000)  ; Alternate color
-    $aColorPicker[2] = GUICtrlCreateLabel('', 190, 92, 25, 20, 0x1000)  ; Selection color
-    $aColorPicker[3] = GUICtrlCreateLabel('', 190, 117, 25, 20, 0x1000) ; Inputs Background Color
-    $aColorPicker[4] = GUICtrlCreateLabel('', 190, 142, 25, 20, 0x1000) ; Inputs Text Color
-    $aColorPicker[5] = GUICtrlCreateLabel('', 190, 167, 25, 20, 0x1000) ; Labels Text Color
-    $aColorPicker[6] = GUICtrlCreateLabel('', 190, 192, 25, 20, 0x1000) ; Frame Color
+    $aLabel[0] = GUICtrlCreateLabel('Slider primary color', 30, 40, 200, 25, 0x200)
+    $aLabel[1] = GUICtrlCreateLabel('Slider alternate color', 30, 65, 200, 25, 0x200)
+    $aLabel[2] = GUICtrlCreateLabel('Slider selection color', 30, 90, 200, 25, 0x200)
+    $aLabel[3] = GUICtrlCreateLabel('Inputs background color', 30, 115, 200, 25, 0x200)
+    $aLabel[4] = GUICtrlCreateLabel('Inputs text color', 30, 140, 200, 25, 0x200)
+    $aLabel[5] = GUICtrlCreateLabel('Labels text color', 30, 165, 200, 25, 0x200)
+    $aLabel[6] = GUICtrlCreateLabel('Frame color', 30, 190, 200, 25, 0x200)
+    $aColorPicker[0] = GUICtrlCreateLabel('', 230, 42, 25, 20, 0x1000)  ; Primary color
+    $aColorPicker[1] = GUICtrlCreateLabel('', 230, 67, 25, 20, 0x1000)  ; Alternate color
+    $aColorPicker[2] = GUICtrlCreateLabel('', 230, 92, 25, 20, 0x1000)  ; Selection color
+    $aColorPicker[3] = GUICtrlCreateLabel('', 230, 117, 25, 20, 0x1000) ; Inputs Background Color
+    $aColorPicker[4] = GUICtrlCreateLabel('', 230, 142, 25, 20, 0x1000) ; Inputs Text Color
+    $aColorPicker[5] = GUICtrlCreateLabel('', 230, 167, 25, 20, 0x1000) ; Labels Text Color
+    $aColorPicker[6] = GUICtrlCreateLabel('', 230, 192, 25, 20, 0x1000) ; Frame Color
     $cFontGroup = GUICtrlCreateGroup(' Font ', 20, 220, 360, 80)
     $aLabel[7] = GUICtrlCreateLabel('Font size', 30, 235, 90, 25, 0x200)
     $aLabel[8] = GUICtrlCreateLabel('Font width', 210, 235, 90, 25, 0x200)
@@ -581,10 +590,10 @@ Func Settings()
     $aButton[0] = GUICtrlCreateButton('..', 300, 265, 60, 25)                       ; Select font
     GUICtrlCreateGroup('', -99, -99, 1, 1)
     GUICtrlCreateTabItem('Workspace')
-    $aLabel[10] = GUICtrlCreateLabel('Current workspace size', 30, 40, 150, 25, 0x200)
-    $aLabel[11] = GUICtrlCreateLabel(GetWorkspaceSize(), 190, 40, 100, 25, 0x200)
-    $aCheckbox[0] = GUICtrlCreateCheckbox('Clean up workspace', 30, 65, 160, 25)                    ; Delete resources
-    $aCheckbox[1] = GUICtrlCreateCheckbox('Delete application settings on exit', 30, 90, 250, 25)   ; Delete config
+    $aLabel[10] = GUICtrlCreateLabel('Current workspace size', 30, 40, 200, 25, 0x200)
+    $aLabel[11] = GUICtrlCreateLabel(GetWorkspaceSize(), 240, 40, 100, 25, 0x200)
+    $aCheckbox[0] = GUICtrlCreateCheckbox('Clean up workspace', 30, 65, 300, 25)                    ; Delete resources
+    $aCheckbox[1] = GUICtrlCreateCheckbox('Delete application settings on exit', 30, 90, 300, 25)   ; Delete config
     GUICtrlCreateTabItem('Info')
     $aLabel[12] = GUICtrlCreateLabel('Application version: ' & $sVersion, 30, 40, 300, 25, 0x200)
     $aLabel[13] = GUICtrlCreateLabel('Author: Andreik (AutoIt Forum)', 30, 65, 300, 25, 0x200)
@@ -618,6 +627,7 @@ Func Settings()
     For $Index = 0 To UBound($aCheckbox) - 1
         GUICtrlSetFont($aCheckbox[$Index], $aFontSettings[0], $aFontSettings[1], 0, $aFontSettings[2])
         GUICtrlSetState($aCheckbox[$Index], ($aOptSettings[$Index] ? $GUI_CHECKED : $GUI_UNCHECKED))
+        GUICtrlSetCursor($aCheckbox[$Index], 0)
     Next
     GUICtrlSetFont($cFontGroup, $aFontSettings[0], $aFontSettings[1], 0, $aFontSettings[2])
     GUISetState(@SW_SHOW, $hGUI)
@@ -644,9 +654,9 @@ Func Settings()
                 EndIf
             Case $aButton[1]                            ; Save button
                 $sCSS = GUICtrlRead($aInput[0])
-                $fDeleteWS = (GUICtrlRead($aCheckbox[0]) = $GUI_CHECKED ? True : False)
-                $fDeleteCfg = (GUICtrlRead($aCheckbox[1]) = $GUI_CHECKED ? True : False)
-                SaveSettings($sCSS, $fDeleteWS, $aColorSettings, $aFontSettings)
+                $bDeleteWS = (GUICtrlRead($aCheckbox[0]) = $GUI_CHECKED ? True : False)
+                $bDeleteCfg = (GUICtrlRead($aCheckbox[1]) = $GUI_CHECKED ? True : False)
+                SaveSettings($sCSS, $bDeleteWS, $aColorSettings, $aFontSettings)
                 LoadSettings(True)
                 ExitLoop
             Case $aButton[2]                            ; Reset button
