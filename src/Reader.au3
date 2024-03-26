@@ -8,6 +8,7 @@
 #AutoIt3Wrapper_Res_CompanyName=Andreik
 #AutoIt3Wrapper_Res_LegalCopyright=© 2024 Andreik (AutoIt Forum)
 #AutoIt3Wrapper_Run_Au3Stripper=Y
+#Au3Stripper_Parameters=/sf /sv /mo /rm /rsln
 #AutoIt3Wrapper_AU3Check_Parameters=-d -w 1 -w 2 -w 4 -w 5 -w 6 -w 7
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
