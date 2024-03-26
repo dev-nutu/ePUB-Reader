@@ -177,7 +177,7 @@ EndFunc
 
 Func _IEEvent_NavigateComplete2($oIEpDisp, $sIEURL)
     #forceref $oIEpDisp, $sIEURL
-	InsertCSS($sCustomCSS)
+    InsertCSS($sCustomCSS)
     If IsMap($mEPUB) Then UpdateSlider()
 EndFunc
 
@@ -186,7 +186,7 @@ Func _IEEvent_CommandStateChange($sCommand, $bEnable)
         Case 0x01
             $bAllowForward = $bEnable
         Case 0x02
-			$bAllowBack = $bEnable
+            $bAllowBack = $bEnable
     EndSwitch
 EndFunc
 
@@ -220,7 +220,7 @@ Func Load_ePUB($sPath)
     SetSliderLabel($mSlider, 'Operation: Initialize ePUB')
     Local $mEPUB = ePUB_Init($sPath)
     If @error Then
-	SetSliderLabel($mSlider, 'Error: ' & GetErrorMessage($EPUB_INIT, @error, @extended))
+        SetSliderLabel($mSlider, 'Error: ' & GetErrorMessage($EPUB_INIT, @error, @extended))
         Return SetError(1, 0, False)
     EndIf
     SetSliderLabel($mSlider, 'Operation: Get files')
@@ -318,21 +318,21 @@ EndFunc
 
 Func WM_SIZE($hWnd, $iMsg, $wParam, $lParam)
     #forceref $iMsg, $wParam
-	If $hWnd = $hMain Then
-		ResizeControls(BitAND($lParam, 0xFFFF), BitShift($lParam, 16))
-		Return True
-	EndIf
-	Return $GUI_RUNDEFMSG
+    If $hWnd = $hMain Then
+        ResizeControls(BitAND($lParam, 0xFFFF), BitShift($lParam, 16))
+        Return True
+    EndIf
+    Return $GUI_RUNDEFMSG
 EndFunc
 
 Func BitmapToCtrl($cCtrl, $bData)
-	Local $hHBITMAP = _GDIPlus_BitmapCreateFromMemory($bData, True)
-	_WinAPI_DeleteObject(GUICtrlSendMsg($cCtrl, 0x00F7, 0, $hHBITMAP))
-	_WinAPI_DeleteObject($hHBITMAP)
+    Local $hHBITMAP = _GDIPlus_BitmapCreateFromMemory($bData, True)
+    _WinAPI_DeleteObject(GUICtrlSendMsg($cCtrl, 0x00F7, 0, $hHBITMAP))
+    _WinAPI_DeleteObject($hHBITMAP)
 EndFunc
 
 Func ResizeControls($iWidth, $iHeight)
-	GUICtrlSetPos($cReader, 10, 10, $iWidth - 20 , $iHeight - 70)
+    GUICtrlSetPos($cReader, 10, 10, $iWidth - 20 , $iHeight - 70)
     For $Index = 0 To 5
         GUICtrlSetPos($aCtrlButtons[$Index], $Index * 60 + 10, $iHeight - 55, 50, 50)
     Next
@@ -362,8 +362,8 @@ Func ResizeControls($iWidth, $iHeight)
 EndFunc
 
 Func InsertCSS($sCSS)
-	Local $oHead = _IETagNameGetCollection($oIE, 'head', 0)
-	If Not @error Then _IEDocInsertHTML($oHead, '<style>' & $sCSS & '</style>', 'beforeend')
+    Local $oHead = _IETagNameGetCollection($oIE, 'head', 0)
+    If Not @error Then _IEDocInsertHTML($oHead, '<style>' & $sCSS & '</style>', 'beforeend')
 EndFunc
 
 Func GetCustomCSS()
