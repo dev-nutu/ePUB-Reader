@@ -1,4 +1,5 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_UseX64=n
 #AutoIt3Wrapper_Icon=..\assets\epub.ico
 #AutoIt3Wrapper_Outfile=..\bin\ePUB Reader.exe
 #AutoIt3Wrapper_Res_Description=ePUB Reader
@@ -6,6 +7,7 @@
 #AutoIt3Wrapper_Res_ProductName=ePUB Reader
 #AutoIt3Wrapper_Res_CompanyName=Andreik
 #AutoIt3Wrapper_Res_LegalCopyright=© 2024 Andreik (AutoIt Forum)
+#AutoIt3Wrapper_Run_Au3Stripper=Y
 #AutoIt3Wrapper_AU3Check_Parameters=-d -w 1 -w 2 -w 4 -w 5 -w 6 -w 7
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
