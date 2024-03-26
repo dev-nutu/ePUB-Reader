@@ -219,7 +219,7 @@ Func Load_ePUB($sPath)
     SetSliderLabel($mSlider, 'Operation: Initialize ePUB')
     Local $mEPUB = ePUB_Init($sPath)
     If @error Then
-        SetSliderLabel($mSlider, 'Error: ' & GetErrorMessage($EPUB_INIT, @error))
+	SetSliderLabel($mSlider, 'Error: ' & GetErrorMessage($EPUB_INIT, @error, @extended))
         Return SetError(1, 0, False)
     EndIf
     SetSliderLabel($mSlider, 'Operation: Get files')
