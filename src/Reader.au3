@@ -3,13 +3,13 @@
 #AutoIt3Wrapper_Icon=..\assets\epub.ico
 #AutoIt3Wrapper_Outfile=..\bin\ePUB Reader.exe
 #AutoIt3Wrapper_Res_Description=ePUB Reader
-#AutoIt3Wrapper_Res_Fileversion=1.2.0.0
+#AutoIt3Wrapper_Res_Fileversion=1.2.2.0
 #AutoIt3Wrapper_Res_ProductName=ePUB Reader
 #AutoIt3Wrapper_Res_CompanyName=Andreik
 #AutoIt3Wrapper_Res_LegalCopyright=© 2024 Andreik (AutoIt Forum)
 #AutoIt3Wrapper_Run_Au3Stripper=Y
 #Au3Stripper_Parameters=/sf /sv /mo /rm /rsln
-#AutoIt3Wrapper_AU3Check_Parameters=-d -w 1 -w 2 -w 4 -w 5 -w 6 -w 7
+#AutoIt3Wrapper_AU3Check_Parameters=-d -w 1 -w 2 -w 3 -w 4 -w 5 -w 6 -w 7
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
 #include <WindowsConstants.au3>
@@ -196,7 +196,7 @@ Func UpdateSlider()
     Local $aChapters = $mEPUB['Chapters']
     Local $aChapter, $aMatch
     For $Index = 1 To $mEPUB['NumOfChapters']
-        $aChapter = StringRegExp($aChapters[$Index][2], '(?:\/*?)([a-zA-Z0-9\_\-]*\.[a-zA-Z]+)(?:.*?)$', 3)
+        $aChapter = StringRegExp($aChapters[$Index][2], '(?:\/*?)([a-zA-Z0-9\_\-\.]*\.[a-zA-Z]+)(?:.*?)$', 3)
         If Not IsArray($aChapter) Then ContinueLoop
         $aMatch = StringRegExp($sLocation, '(?:.*)(' & EscapeRegEx($aChapter[0]) & ')(?:.*)', 3)
         If Not IsArray($aMatch) Then ContinueLoop
