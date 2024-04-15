@@ -43,7 +43,7 @@ For $Index = 0 To 5
     GUICtrlSetTip($aCtrlButtons[$Index], $aTips[$Index])
     GUICtrlSetCursor($aCtrlButtons[$Index], 0)
 Next
-BitmapToCtrl($aCtrlButtons[0], EPUB_Icon())
+BitmapToCtrl($aCtrlButtons[0], Load_Icon())
 BitmapToCtrl($aCtrlButtons[1], Back_Icon(True))
 BitmapToCtrl($aCtrlButtons[2], Home_Icon())
 BitmapToCtrl($aCtrlButtons[3], Stop_Icon())
@@ -196,7 +196,7 @@ Func UpdateSlider()
     Local $aChapters = $mEPUB['Chapters']
     Local $aChapter, $aMatch
     For $Index = 1 To $mEPUB['NumOfChapters']
-        $aChapter = StringRegExp($aChapters[$Index][2], '(?:\/*?)([a-zA-Z0-9\_\-\.]*\.[a-zA-Z]+)(?:.*?)$', 3)
+        $aChapter = StringRegExp($aChapters[$Index][2], '(?:\/*?)([a-zA-Z0-9\_\-]*\.[a-zA-Z]+)(?:.*?)$', 3)
         If Not IsArray($aChapter) Then ContinueLoop
         $aMatch = StringRegExp($sLocation, '(?:.*)(' & EscapeRegEx($aChapter[0]) & ')(?:.*)', 3)
         If Not IsArray($aMatch) Then ContinueLoop
@@ -550,18 +550,10 @@ EndFunc
 Func Settings()
     ; Local variables
     Local $vTemp, $sCSS, $bDeleteWS, $iMsg, $iSelect, $cFontGroup
-    Local $aLabel[14], $aButton[4], $aInput[5], $aColorPicker[7], $aCheckbox[2]
+    Local $aLabel[14], $aButton[4], $aInput[4], $aColorPicker[7], $aCheckbox[2]
     Local $aColorSettings = $aColors
     Local $aOptSettings[2] = [$bDeleteRes, $bDeleteCfg]
     Local $aFontSettings = $aFont
-    Local $sCredits = 'Epub icons created by shohanur.rahman13 - Flaticon (https://www.flaticon.com/free-icons/epub)' & @CRLF & @CRLF
-    $sCredits &= 'Start icons created by hqrloveq - Flaticon (https://www.flaticon.com/free-icons/start)' & @CRLF & @CRLF
-    $sCredits &= 'Home button icons created by hqrloveq - Flaticon (https://www.flaticon.com/free-icons/home-button)' & @CRLF & @CRLF
-    $sCredits &= 'Ui icons created by Dewi Sari - Flaticon (https://www.flaticon.com/free-icons/ui)' & @CRLF & @CRLF
-    $sCredits &= 'Refresh icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/refresh)' & @CRLF & @CRLF
-    $sCredits &= 'Next icons created by KP Arts - Flaticon (https://www.flaticon.com/free-icons/next)' & @CRLF & @CRLF
-    $sCredits &= 'Settings icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/settings)' & @CRLF & @CRLF
-    $sCredits &= 'Ui icons created by Smashicons - Flaticon (https://www.flaticon.com/free-icons/ui)' & @CRLF
     ; UI
     Local $hGUI = GUICreate('Settings', 405, 360 + GetTitleBarHeight(), Default, Default, $DS_SETFOREGROUND, Default, $hMain)
     GUICtrlCreateTab(10, 10, 380, 300)
@@ -599,7 +591,6 @@ Func Settings()
     GUICtrlCreateTabItem('Info')
     $aLabel[12] = GUICtrlCreateLabel('Application version: ' & $sVersion, 30, 40, 300, 25, 0x200)
     $aLabel[13] = GUICtrlCreateLabel('Author: Andreik (AutoIt Forum)', 30, 65, 300, 25, 0x200)
-    $aInput[4] = GUICtrlCreateEdit('', 30, 90, 340, 200, BitOR($WS_VSCROLL, 0x0800))                ; Credits
     GUICtrlCreateTabItem('')
     $aButton[1] = GUICtrlCreateButton('Save', 10, 320, 120, 30)      ; Save
     $aButton[2] = GUICtrlCreateButton('Reset', 140, 320, 120, 30)    ; Reset
@@ -620,7 +611,6 @@ Func Settings()
         GUICtrlSetFont($aInput[$Index], $aFontSettings[0], $aFontSettings[1], 0, $aFontSettings[2])
         GUICtrlSetBkColor($aInput[$Index], $aColors[3])
         GUICtrlSetColor($aInput[$Index], $aColors[4])
-        If $Index = 4 Then GUICtrlSetData($aInput[$Index], $sCredits)
     Next
     For $Index = 0 To UBound($aColorPicker) - 1
         GUICtrlSetBkColor($aColorPicker[$Index], $aColors[$Index])
