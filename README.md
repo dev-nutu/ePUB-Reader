@@ -2,7 +2,7 @@
 
 This is a portable application that can open ePUB books (EPUB 2 and EPUB 3).
 
-![Main UI](/assets/ui.png)[^1]
+![Main UI](/assets/ui.png)
 
 Features:
 * Load ePUB book
@@ -33,15 +33,3 @@ v.1.1.0.0
 - Fixed some issues to open certain ePUB files
 - Added more options to customize UI
 - Added a button to jump fast to a specific chapter
-
-# Credits
-[Epub icons created by shohanur.rahman13 - Flaticon](https://www.flaticon.com/free-icons/epub)
-[Start icons created by hqrloveq - Flaticon](https://www.flaticon.com/free-icons/start)
-[Home button icons created by hqrloveq - Flaticon](https://www.flaticon.com/free-icons/home-button)
-[Ui icons created by Dewi Sari - Flaticon](https://www.flaticon.com/free-icons/ui)
-[Refresh icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/refresh)
-[Next icons created by KP Arts - Flaticon](https://www.flaticon.com/free-icons/next)
-[Settings icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/settings)
-[Ui icons created by Smashicons - Flaticon](https://www.flaticon.com/free-icons/ui)
-
-[^1]: Check credits section for the icons used in application UI.
