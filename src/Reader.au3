@@ -3,7 +3,7 @@
 #AutoIt3Wrapper_Icon=..\assets\epub.ico
 #AutoIt3Wrapper_Outfile=..\bin\ePUB Reader.exe
 #AutoIt3Wrapper_Res_Description=ePUB Reader
-#AutoIt3Wrapper_Res_Fileversion=1.2.2.0
+#AutoIt3Wrapper_Res_Fileversion=1.2.3.0
 #AutoIt3Wrapper_Res_ProductName=ePUB Reader
 #AutoIt3Wrapper_Res_CompanyName=Andreik
 #AutoIt3Wrapper_Res_LegalCopyright=© 2024 Andreik (AutoIt Forum)
@@ -196,7 +196,7 @@ Func UpdateSlider()
     Local $aChapters = $mEPUB['Chapters']
     Local $aChapter, $aMatch
     For $Index = 1 To $mEPUB['NumOfChapters']
-        $aChapter = StringRegExp($aChapters[$Index][2], '(?:\/*?)([a-zA-Z0-9\_\-]*\.[a-zA-Z]+)(?:.*?)$', 3)
+        $aChapter = StringRegExp($aChapters[$Index][2], '(?:\/*?)([a-zA-Z0-9\_\-\.]*\.[a-zA-Z]+)(?:.*?)$', 3)
         If Not IsArray($aChapter) Then ContinueLoop
         $aMatch = StringRegExp($sLocation, '(?:.*)(' & EscapeRegEx($aChapter[0]) & ')(?:.*)', 3)
         If Not IsArray($aMatch) Then ContinueLoop
