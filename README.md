@@ -25,9 +25,11 @@ Features:
 
 
 # Change log
+
 v.1.2.0.0
 - Improved navigation
 - Improved metadata
+- Fixed issue for books with invalid guides
 
 v.1.1.0.0
 - Fixed some issues to open certain ePUB files
