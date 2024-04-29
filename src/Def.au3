@@ -11,4 +11,4 @@ Global $aColorProperty[7] = ['PrimaryColor', 'AlternateColor', 'SelectionColor',
 Global $aFontProperty[3] = ['FontSize', 'FontWeight', 'FontName']
 Global $sCustomCSS, $aColors[7], $aFont[3], $aCollector[1]
 Global Const $sAppTitle = 'ePub Reader'
-Global Const $sVersion = '1.2.3.0'
+Global Const $sVersion = '1.2.4.0'

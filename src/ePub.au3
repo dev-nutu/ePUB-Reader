@@ -152,7 +152,10 @@ Func ePUB_ReadOPF($mEPUB, $aOPF)
             _SQLite_Exec($mEPUB['DB'], 'INSERT INTO guides (href, title) VALUES(' & _SQLite_FastEscape($aHref[0]) & ',' & _SQLite_FastEscape($aTitle[0]) & ');')
         Next
     EndIf
-    Local $aQuery = SQLite_Query($mEPUB['DB'], 'SELECT s.sequence, s.idref, m.href, g.title FROM spine s INNER JOIN manifest m ON s.idref=m.id LEFT JOIN guides g ON m.href=g.href ORDER BY s.sequence;')
+    Local $sQuery = 'SELECT s.sequence, s.idref, m.href, group_concat(g.title) AS title '
+    $sQuery &= 'FROM spine s INNER JOIN manifest m ON s.idref=m.id LEFT JOIN guides g ON m.href=g.href '
+    $sQuery &= 'GROUP BY s.sequence, s.idRef, m.href ORDER BY s.sequence;'
+    Local $aQuery = SQLite_Query($mEPUB['DB'], $sQuery)
     Local $iChapters = @extended
     Return SetError(0, $iChapters, $aQuery)
 EndFunc
